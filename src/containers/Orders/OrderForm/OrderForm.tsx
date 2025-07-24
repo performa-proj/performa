@@ -233,7 +233,7 @@ export default function OrderForm() {
       <div className="grow px-4 py-1.5">
         <div className="py-1.5 flex items-center">
           <CustomerSection
-            ordering={state.ordering}
+            orderData={state.orderData}
             onCustomer={handleCustomer}
             onRemove={handleCustomerRemoved}
           />

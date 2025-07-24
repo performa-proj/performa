@@ -1,0 +1,17 @@
+import React from "react";
+
+export default async function Topline({
+  text,
+}: {
+  text: string;
+}) {
+  return (
+    <div className="flex w-full">
+      <div className="grow h-0.5 border-t-2 border-blue-800 mt-5" />
+      <p className="uppercase text-4xl font-normal text-blue-800 px-2">
+        {text}
+      </p>
+      <div className="h-0.5 w-12 border-t-2 border-blue-800 mt-5" />
+    </div>
+  );
+}
