@@ -67,7 +67,7 @@ export default function Page() {
       <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:z-50 lg:w-72">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
           <div className="flex h-16 shrink-0 items-center">
-            <p className="pt-6 text-lg font-semibold">Performa</p>
+            <p className="pt-6 text-lg font-semibold text-gray-900">Performa</p>
           </div>
           <Navs
             selectedID={selectedID}
