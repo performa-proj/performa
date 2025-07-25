@@ -281,8 +281,8 @@ export default function OrderForm() {
 
       {state.summary && (
         <OrderSummaryDialog
-          data={state.summary.order}
           open={state.summary !== undefined}
+          data={state.summary.order}
           onClose={handleSummaryClosed}
         />
       )}

@@ -21,14 +21,6 @@ export default function CustomerSection({
 
   return (
     <div className="w-full flex items-center">
-      <p
-        className={classnames(customer ? "block" : "hidden",
-          "bg-white p-1 mr-1 rounded-sm border border-blue-600 text-sm text-blue-600 font-semibold uppercase"
-        )}
-        onClick={() => { console.log("1234") }}
-      >
-        RO
-      </p>
       <span className="hidden sm:block text-sm/6 font-medium text-gray-900 mr-1.5">
         Customer:
       </span>

@@ -23,7 +23,7 @@ const Navs = ({
   <nav className="flex flex-1 flex-col">
     <ul role="list" className="flex flex-1 flex-col gap-y-7">
       <li>
-        <div className="text-xs/6 font-semibold text-gray-400">Orders</div>
+        <div className="text-xs/6 font-semibold text-gray-600">Orders</div>
         <ul role="list" className="-mx-2 mt-2 space-y-1">
           {orders.map((each) => (
             <li
@@ -48,9 +48,8 @@ const Navs = ({
               </p>
             </li>
           ))}
-        </ul>
+        </ul> 
       </li>
-
       <li>
 
       </li>
@@ -78,7 +77,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:pl-72 h-full">
+      <div className="flex flex-col lg:pl-72 h-full w-full">
         <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-white p-4 sm:px-6 border-b border-gray-200">
           <button type="button" onClick={() => setNavsOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
             <Bars3Icon aria-hidden="true" className="size-6" />
@@ -106,7 +105,6 @@ export default function Page() {
             <TransitionChild>
               <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
                 <button type="button" onClick={() => setNavsOpen(false)} className="-m-2.5 p-2.5">
-                  <span className="sr-only">Close sidebar</span>
                   <XMarkIcon aria-hidden="true" className="size-6 text-white" />
                 </button>
               </div>
@@ -114,7 +112,7 @@ export default function Page() {
 
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
               <div className="flex h-16 shrink-0 items-center">
-                <p className="pt-6 text-lg font-semibold">Performa</p>
+                <p className="pt-6 text-lg font-semibold text-gray-900">Performa</p>
               </div>
               <Navs
                 selectedID={selectedID}
