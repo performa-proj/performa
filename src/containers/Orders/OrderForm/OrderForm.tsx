@@ -140,6 +140,20 @@ export default function OrderForm() {
     });
   };
 
+  const handleEditOrderlineDeleted = (data: {
+    sku: string;
+  }) => {
+    const { sku } = data;
+    const nState = {
+      ...state,
+    };
+
+    delete nState.orderData.lines[sku]
+    nState.editOrderline = undefined;
+    nState.ordering = resolveOrdering(nState.orderData);
+    setState(nState);
+  };
+
   const handleEditOrderlineUpdated = (data: {
     sku: string;
     quantity: number;
@@ -274,6 +288,7 @@ export default function OrderForm() {
         <EditOrderlineDialog
           open={state.editOrderline !== undefined}
           predata={state.editOrderline}
+          onDelete={handleEditOrderlineDeleted}
           onUpdated={handleEditOrderlineUpdated}
           onClose={handleEditOrderlineClosed}
         />

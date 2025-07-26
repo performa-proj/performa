@@ -8,7 +8,9 @@ export default function DialogBase({
   title,
   submitButton,
   deleteButton,
-  cancelButton,
+  closeButton = {
+    title: "Cancel",
+  },
   onClose,
 }: {
   children: React.ReactNode;
@@ -19,14 +21,17 @@ export default function DialogBase({
     onSubmit: () => void;
   };
   deleteButton?: {
-    title: string;
+    title?: string;
     onDelete: () => void;
   };
-  cancelButton?: {
+  closeButton?: {
     title: string;
   };
   onClose: () => void;
 }) {
+  if (deleteButton) {
+    deleteButton.title = deleteButton.title || "Delete";
+  }
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
@@ -76,7 +81,7 @@ export default function DialogBase({
                 onClick={() => onClose()}
                 className="mt-3 inline-flex w-full min-w-18 justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
-                {(cancelButton && cancelButton.title) || "Cancel"}
+                {closeButton.title}
               </button>
             </div>
           </DialogPanel>

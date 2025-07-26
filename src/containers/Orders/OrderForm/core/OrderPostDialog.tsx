@@ -5,9 +5,9 @@ import React from "react";
 import DialogBase from "@/containers/core/DialogBase";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
+import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { summarizeOrder } from "./summarizeOrder";
-import { IOrderline } from "@/services/Orders/IOrderline";
 
 const OrderTypes = [
   { label: "RO", value: "regular" },
@@ -59,6 +59,7 @@ export default function OrderPostDialog({
       id: string;
       name: string;
       mobile: string;
+      creditDays: number;
     } | undefined;
     orderlines: IOrderline[];
     weight: number;
@@ -66,6 +67,7 @@ export default function OrderPostDialog({
   }) => void;
   onClose: () => void;
 }) {
+  console.log(ordering);
   const [state, setState] = React.useState({
     type: "regular",
     handling: "storefront",
@@ -79,7 +81,7 @@ export default function OrderPostDialog({
   const { weight, total } = summarizeOrder(ordering.orderlines);
 
   const flags = {
-    type: ordering.customer ? true : false,
+    preorderable: ordering.customer ? true : false,
     handling: ordering.customer && state.type === "regular" ? true : false,
   };
 
@@ -123,6 +125,7 @@ export default function OrderPostDialog({
           id: ordering.customer.id,
           name: ordering.customer.name,
           mobile: ordering.customer.mobile,
+          creditDays: ordering.customer.creditDays,
         } : undefined,
         orderlines: ordering.orderlines,
         weight: weight,
@@ -131,18 +134,32 @@ export default function OrderPostDialog({
     }
   };
 
+  const handleClosed = () => {
+    onClose();
+
+    setState({
+      type: "regular",
+      handling: "storefront",
+      payment: {
+        cash: "0",
+        transfer: "0",
+        acc: "0",
+      },
+    });
+  };
+
   return (
     <DialogBase
       title="Post Order"
       open={open}
-      onClose={onClose}
+      onClose={handleClosed}
       submitButton={{
         title: "Post",
         onSubmit: handlePosting,
       }}
     >
       <div>
-        {flags.type && (
+        {flags.preorderable && (
           <div className="py-0.5 grid grid-cols-3 gap-4">
             <div className="flex items-center text-sm font-medium text-gray-600">
               Type
@@ -181,7 +198,7 @@ export default function OrderPostDialog({
           <div className="py-2 grid grid-cols-3 gap-4">
             <dt className="text-sm/6 font-medium text-gray-600">Customer</dt>
             <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-              {orderData.customer ? orderData.customer.name : "[Walk-in]"}
+              {orderData.customer ? orderData.customer.name : "[Walk-In]"}
             </dd>
           </div>
 
@@ -194,7 +211,7 @@ export default function OrderPostDialog({
 
           {flags.handling && (
             <div className="py-2 grid grid-cols-3 gap-4">
-              <dt className="text-sm/6 font-medium text-gray-600">Handling</dt>
+              <dt className="text-sm/6 font-medium text-gray-600">Process</dt>
               <dd className="col-span-2">
                 <div className="flex items-center space-x-6 space-y-0">
                   {Handlings.map((handling) => (
@@ -232,7 +249,7 @@ export default function OrderPostDialog({
             </div>
           )}
 
-          <div className="hidden py-2">
+          <div className="py-2">
             <p className="text-sm my-1 font-semibold text-gray-900">Payment</p>
 
             <div className="py-1.5 grid grid-cols-3 gap-4">
