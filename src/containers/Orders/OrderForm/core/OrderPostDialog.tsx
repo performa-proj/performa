@@ -39,7 +39,6 @@ export default function OrderPostDialog({
       id: string;
       name: string;
       mobile: string;
-      points: number;
       creditDays: number;
       creditLimit: number;
       creditSpent: number;
@@ -110,7 +109,6 @@ export default function OrderPostDialog({
           id: orderData.customer.id,
           name: orderData.customer.name,
           mobile: orderData.customer.mobile,
-          points: orderData.customer.points,
           creditDays: orderData.customer.creditDays,
           creditLimit: orderData.customer.creditLimit,
           creditSpent: orderData.customer.creditSpent,

@@ -19,8 +19,6 @@ export interface IOrder {
   orderlines: IOrderline[];
   weight: number;
   total: number;
-  delivery: {
-  } | undefined;
   payment: {
     dueDate: number;
   };

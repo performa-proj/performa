@@ -5,7 +5,6 @@ export interface IOrdering {
     id: string;
     name: string;
     mobile: string;
-    points: number;
     creditDays: number;
     creditLimit: number;
     creditSpent: number;

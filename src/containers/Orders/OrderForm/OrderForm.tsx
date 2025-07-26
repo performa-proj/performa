@@ -62,12 +62,11 @@ export default function OrderForm() {
         id: identity._id,
         name: identity.name,
         mobile: identity.mobile,
-        points: identity.custac.points,
-        creditDays: identity.custac.creditDays,
-        creditLimit: identity.custac.creditLimit,
-        creditSpent: identity.custac.creditSpent,
+        creditDays: identity.cac.creditDays,
+        creditLimit: identity.cac.creditLimit,
+        creditSpent: identity.cac.creditSpent,
       },
-      level: identity.custac.level,
+      level: identity.cac.level,
     };
 
     const nState: IState = {
@@ -184,7 +183,6 @@ export default function OrderForm() {
       id: string;
       name: string;
       mobile: string;
-      points: number;
       creditDays: number;
       creditLimit: number;
       creditSpent: number;
