@@ -22,27 +22,27 @@ export default function Orderline({
     >
       <td
         scope="col"
-        className="whitespace-nowrap p-2 text-right"
+        className="p-2 text-right"
       >
         <div className="text-sm font-medium text-gray-900">{quantity}</div>
       </td>
       <td
         scope="col"
-        className="whitespace-nowrap p-2 text-left"
+        className="p-2 text-left"
       >
         <div className="text-sm font-medium text-gray-900">{label}</div>
         <div className="mt-1 text-sm font-normal text-gray-600">[{sku}]</div>
       </td>
       <td
         scope="col"
-        className="whitespace-nowrap p-2 text-right"
+        className="p-2 text-right"
       >
         <div className="text-sm font-medium text-gray-900">{sellingAt.toLocaleString()}</div>
         {isShow && (<div className="mt-1 font-normal text-sm text-gray-600 line-through">{retailPrice.toLocaleString()}</div>)}
       </td>
       <td
         scope="col"
-        className="whitespace-nowrap p-2 text-right"
+        className="p-2 text-right"
       >
         <div className="text-sm font-medium text-gray-900">{sellingTotal.toLocaleString()}</div>
         {isShow && (<div className="mt-1 text-sm font-normal text-gray-600 line-through">{retailTotal.toLocaleString()}</div>)}
