@@ -35,13 +35,13 @@ export default function Orderlines({
             <tr key={each.sku}>
               <td
                 scope="col"
-                className="whitespace-nowrap p-2 text-right"
+                className="p-2 text-right"
               >
                 <p className="text-sm font-medium text-gray-900">{each.quantity}</p>
               </td>
               <td
                 scope="col"
-                className="whitespace-nowrap p-2 text-left"
+                className="p-2 text-left"
               >
                 <div className="block sm:flex sm:grow">
                   <p className="text-sm font-medium text-gray-900 sm:order-1">{each.label}</p>
@@ -50,13 +50,13 @@ export default function Orderlines({
               </td>
               <td
                 scope="col"
-                className="whitespace-nowrap p-2 text-right"
+                className="p-2 text-right"
               >
                 <p className="text-sm font-medium text-gray-900">{each.sellingAt.toLocaleString()}.00</p>
               </td>
               <td
                 scope="col"
-                className="whitespace-nowrap p-2 text-right"
+                className="p-2 text-right"
               >
                 <p className="text-sm font-medium text-gray-900">{sellingTotal.toLocaleString()}.00</p>
               </td>
