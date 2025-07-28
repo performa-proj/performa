@@ -1,9 +1,8 @@
 import { IIdentity } from "../IIdentity";
 
 export interface ICustomer extends IIdentity {
-  custac: {
+  cac: {
     level: number;
-    points: number;
     creditDays: number;
     creditLimit: number;
     creditSpent: number;

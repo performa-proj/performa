@@ -3,18 +3,19 @@
 import React from "react";
 
 import DialogBase from "@/containers/core/DialogBase";
+import { resolveNumber } from "@/containers/core/resolveNumber";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
+import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { summarizeOrder } from "./summarizeOrder";
-import { IOrderline } from "@/services/Orders/IOrderline";
 
 const OrderTypes = [
   { label: "RO", value: "regular" },
   { label: "PO", value: "preorder" },
 ];
 
-const Handlings = [
+const Processes = [
   { label: "Storefront", value: "storefront" },
   { label: "Delivery", value: "delivery" },
 ];
@@ -39,7 +40,6 @@ export default function OrderPostDialog({
       id: string;
       name: string;
       mobile: string;
-      points: number;
       creditDays: number;
       creditLimit: number;
       creditSpent: number;
@@ -59,6 +59,7 @@ export default function OrderPostDialog({
       id: string;
       name: string;
       mobile: string;
+      creditDays: number;
     } | undefined;
     orderlines: IOrderline[];
     weight: number;
@@ -68,22 +69,27 @@ export default function OrderPostDialog({
 }) {
   const [state, setState] = React.useState({
     type: "regular",
-    handling: "storefront",
+    process: "storefront",
     payment: {
       cash: "0",
       transfer: "0",
       acc: "0",
     },
   });
-
-  const { weight, total } = summarizeOrder(ordering.orderlines);
-
-  const flags = {
-    type: ordering.customer ? true : false,
-    handling: ordering.customer && state.type === "regular" ? true : false,
-  };
+  const { customer, orderlines } = ordering;
+  const { weight, total } = summarizeOrder(orderlines);
 
   const handleCashChanged = (value: string) => {
+    setState({
+      ...state,
+      payment: {
+        ...state.payment,
+        cash: resolveNumber(state.payment.cash, value),
+      },
+    });
+  };
+
+  const handleTransferChanged = (value: string) => {
     if (value.length === 0) {
       value = "0";
     }
@@ -95,7 +101,7 @@ export default function OrderPostDialog({
         ...state,
         payment: {
           ...state.payment,
-          cash: value,
+          transfer: value,
         },
       });
     }
@@ -108,7 +114,6 @@ export default function OrderPostDialog({
           id: orderData.customer.id,
           name: orderData.customer.name,
           mobile: orderData.customer.mobile,
-          points: orderData.customer.points,
           creditDays: orderData.customer.creditDays,
           creditLimit: orderData.customer.creditLimit,
           creditSpent: orderData.customer.creditSpent,
@@ -123,6 +128,7 @@ export default function OrderPostDialog({
           id: ordering.customer.id,
           name: ordering.customer.name,
           mobile: ordering.customer.mobile,
+          creditDays: ordering.customer.creditDays,
         } : undefined,
         orderlines: ordering.orderlines,
         weight: weight,
@@ -131,18 +137,32 @@ export default function OrderPostDialog({
     }
   };
 
+  const handleClosed = () => {
+    onClose();
+
+    setState({
+      type: "regular",
+      process: "storefront",
+      payment: {
+        cash: "0",
+        transfer: "0",
+        acc: "0",
+      },
+    });
+  };
+
   return (
     <DialogBase
       title="Post Order"
       open={open}
-      onClose={onClose}
+      onClose={handleClosed}
       submitButton={{
         title: "Post",
         onSubmit: handlePosting,
       }}
     >
       <div>
-        {flags.type && (
+        {customer && (
           <div className="py-0.5 grid grid-cols-3 gap-4">
             <div className="flex items-center text-sm font-medium text-gray-600">
               Type
@@ -152,7 +172,8 @@ export default function OrderPostDialog({
                 {OrderTypes.map((type) => (
                   <label
                     key={type.value}
-                    className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600">
+                    className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600"
+                  >
                     <input
                       name="order-type"
                       type="radio"
@@ -180,7 +201,7 @@ export default function OrderPostDialog({
           <div className="py-2 grid grid-cols-3 gap-4">
             <dt className="text-sm/6 font-medium text-gray-600">Customer</dt>
             <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-              {orderData.customer ? orderData.customer.name : "[Walk-in]"}
+              {customer ? customer.name : "[Walk-In]"}
             </dd>
           </div>
 
@@ -191,51 +212,60 @@ export default function OrderPostDialog({
             </dd>
           </div>
 
-          {flags.handling && (
-            <div className="py-2 grid grid-cols-3 gap-4">
-              <dt className="text-sm/6 font-medium text-gray-600">Handling</dt>
-              <dd className="col-span-2">
-                <div className="flex items-center space-x-6 space-y-0">
-                  {Handlings.map((handling) => (
-                    <div
-                      key={handling.value}
-                      className="flex items-center"
-                      onClick={() => {
+          <div className="py-2 grid grid-cols-3 gap-4">
+            <dt className="text-sm/6 font-medium text-gray-600">Process</dt>
+            <dd className="col-span-2">
+              <div className="flex items-center space-x-6 space-y-0">
+                {Processes.map((each) => (
+                  <div
+                    key={each.value}
+                    className="flex items-center"
+                    onClick={() => {
+                      setState({
+                        ...state,
+                        process: each.value,
+                      });
+                    }}
+                  >
+                    <input
+                      id={each.value}
+                      name="handling"
+                      type="radio"
+                      className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-blue-600 checked:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
+                      checked={each.value === state.process}
+                      value={each.value}
+                      onChange={(e) => {
                         setState({
                           ...state,
-                          handling: handling.value,
+                          process: e.currentTarget.value,
                         });
                       }}
-                    >
-                      <input
-                        id={handling.value}
-                        name="handling"
-                        type="radio"
-                        className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-blue-600 checked:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                        checked={handling.value === state.handling}
-                        value={handling.value}
-                        onChange={(e) => {
-                          setState({
-                            ...state,
-                            handling: e.currentTarget.value,
-                          });
-                        }}
-                      />
-                      <label className="ml-1.5 block text-sm/6 font-medium text-gray-900">
-                        {handling.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </dd>
-            </div>
-          )}
+                    />
+                    <label className="ml-1.5 block text-sm/6 font-medium text-gray-900">
+                      {each.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </dd>
+          </div>
 
-          <div className="hidden py-2">
-            <p className="text-sm my-1 font-semibold text-gray-900">Payment</p>
+          <div className="py-2 grid grid-cols-3 gap-4">
+            <dt className="text-sm/6 font-medium text-gray-600">Pay on Delivery</dt>
+            <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+              {total.toLocaleString()} B.
+            </dd>
+          </div>
+
+          <div className="py-2">
+            <p className="text-sm my-1 font-semibold text-gray-900 py-2">Payment</p>
 
             <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">Cash</dt>
+              <dt
+                className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
+              >
+                Cash
+              </dt>
               <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
                 <input
                   type="text"
@@ -247,26 +277,21 @@ export default function OrderPostDialog({
             </div>
 
             <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">Transfer</dt>
+              <dt
+                className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
+              >
+                Transfer
+              </dt>
               <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
                 <input
                   type="text"
                   className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
                   value={state.payment.transfer}
-                  onChange={(e) => handleCashChanged(e.currentTarget.value)}
+                  onChange={(e) => handleTransferChanged(e.currentTarget.value)}
                 />
               </dd>
             </div>
 
-            <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">A/C Credit</dt>
-              <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                <input
-                  type="text"
-                  className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                />
-              </dd>
-            </div>
           </div>
         </dl>
       </div >

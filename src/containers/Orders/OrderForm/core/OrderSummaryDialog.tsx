@@ -64,7 +64,7 @@ export default function OrderSummaryDialog({
                 <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
                   <p>
                     <a
-                      href={`/orders/docs/${data._id}/invoice`}
+                      href={`/orders/${data._id}/invoice`}
                       className="text-sm/6 font-semibold text-gray-900 hover:text-gray-700"
                       target="_blank"
                     >

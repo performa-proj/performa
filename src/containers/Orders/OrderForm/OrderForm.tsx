@@ -62,12 +62,11 @@ export default function OrderForm() {
         id: identity._id,
         name: identity.name,
         mobile: identity.mobile,
-        points: identity.custac.points,
-        creditDays: identity.custac.creditDays,
-        creditLimit: identity.custac.creditLimit,
-        creditSpent: identity.custac.creditSpent,
+        creditDays: identity.cac.creditDays,
+        creditLimit: identity.cac.creditLimit,
+        creditSpent: identity.cac.creditSpent,
       },
-      level: identity.custac.level,
+      level: identity.cac.level,
     };
 
     const nState: IState = {
@@ -140,6 +139,20 @@ export default function OrderForm() {
     });
   };
 
+  const handleEditOrderlineDeleted = (data: {
+    sku: string;
+  }) => {
+    const { sku } = data;
+    const nState = {
+      ...state,
+    };
+
+    delete nState.orderData.lines[sku]
+    nState.editOrderline = undefined;
+    nState.ordering = resolveOrdering(nState.orderData);
+    setState(nState);
+  };
+
   const handleEditOrderlineUpdated = (data: {
     sku: string;
     quantity: number;
@@ -170,7 +183,6 @@ export default function OrderForm() {
       id: string;
       name: string;
       mobile: string;
-      points: number;
       creditDays: number;
       creditLimit: number;
       creditSpent: number;
@@ -255,9 +267,6 @@ export default function OrderForm() {
           onEditing={handleEditOrderlineOpened}
         />
       </div>
-      <div className="hidden lg:flex lg:w-72 border-l border-gray-200">
-
-      </div>
 
       <OrderPostDialog
         open={open}
@@ -274,6 +283,7 @@ export default function OrderForm() {
         <EditOrderlineDialog
           open={state.editOrderline !== undefined}
           predata={state.editOrderline}
+          onDelete={handleEditOrderlineDeleted}
           onUpdated={handleEditOrderlineUpdated}
           onClose={handleEditOrderlineClosed}
         />
@@ -281,8 +291,8 @@ export default function OrderForm() {
 
       {state.summary && (
         <OrderSummaryDialog
-          data={state.summary.order}
           open={state.summary !== undefined}
+          data={state.summary.order}
           onClose={handleSummaryClosed}
         />
       )}

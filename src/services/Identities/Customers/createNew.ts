@@ -1,6 +1,6 @@
 import { COLLECTION_NAME, Data } from "@/db";
 import { ICustomer } from "./ICustomer";
-import { initialCustac } from "./core/initialCustac";
+import { initialCAC } from "./core/initialCAC";
 
 export const createNew = async ({
   name,
@@ -15,7 +15,7 @@ export const createNew = async ({
   const data = {
     mobile,
     name,
-    custac: initialCustac(),
+    cac: initialCAC(),
     createdAt: now,
     updatedAt: now,
   };

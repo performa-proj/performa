@@ -6,7 +6,6 @@ export const createPreorder = async (payloads: {
     id: string;
     name: string;
     mobile: string;
-    points: number;
     creditDays: number;
     creditLimit: number;
     creditSpent: number;
