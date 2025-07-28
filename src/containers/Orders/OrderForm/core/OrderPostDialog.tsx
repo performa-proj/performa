@@ -3,6 +3,7 @@
 import React from "react";
 
 import DialogBase from "@/containers/core/DialogBase";
+import { resolveNumber } from "@/containers/core/resolveNumber";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
 import { IOrderline } from "@/services/Orders/IOrderline";
@@ -14,7 +15,7 @@ const OrderTypes = [
   { label: "PO", value: "preorder" },
 ];
 
-const Handlings = [
+const Processes = [
   { label: "Storefront", value: "storefront" },
   { label: "Delivery", value: "delivery" },
 ];
@@ -66,25 +67,29 @@ export default function OrderPostDialog({
   }) => void;
   onClose: () => void;
 }) {
-  console.log(ordering);
   const [state, setState] = React.useState({
     type: "regular",
-    handling: "storefront",
+    process: "storefront",
     payment: {
       cash: "0",
       transfer: "0",
       acc: "0",
     },
   });
-
-  const { weight, total } = summarizeOrder(ordering.orderlines);
-
-  const flags = {
-    preorderable: ordering.customer ? true : false,
-    handling: ordering.customer && state.type === "regular" ? true : false,
-  };
+  const { customer, orderlines } = ordering;
+  const { weight, total } = summarizeOrder(orderlines);
 
   const handleCashChanged = (value: string) => {
+    setState({
+      ...state,
+      payment: {
+        ...state.payment,
+        cash: resolveNumber(state.payment.cash, value),
+      },
+    });
+  };
+
+  const handleTransferChanged = (value: string) => {
     if (value.length === 0) {
       value = "0";
     }
@@ -96,7 +101,7 @@ export default function OrderPostDialog({
         ...state,
         payment: {
           ...state.payment,
-          cash: value,
+          transfer: value,
         },
       });
     }
@@ -137,7 +142,7 @@ export default function OrderPostDialog({
 
     setState({
       type: "regular",
-      handling: "storefront",
+      process: "storefront",
       payment: {
         cash: "0",
         transfer: "0",
@@ -157,7 +162,7 @@ export default function OrderPostDialog({
       }}
     >
       <div>
-        {flags.preorderable && (
+        {customer && (
           <div className="py-0.5 grid grid-cols-3 gap-4">
             <div className="flex items-center text-sm font-medium text-gray-600">
               Type
@@ -196,7 +201,7 @@ export default function OrderPostDialog({
           <div className="py-2 grid grid-cols-3 gap-4">
             <dt className="text-sm/6 font-medium text-gray-600">Customer</dt>
             <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-              {orderData.customer ? orderData.customer.name : "[Walk-In]"}
+              {customer ? customer.name : "[Walk-In]"}
             </dd>
           </div>
 
@@ -207,51 +212,60 @@ export default function OrderPostDialog({
             </dd>
           </div>
 
-          {flags.handling && (
-            <div className="py-2 grid grid-cols-3 gap-4">
-              <dt className="text-sm/6 font-medium text-gray-600">Process</dt>
-              <dd className="col-span-2">
-                <div className="flex items-center space-x-6 space-y-0">
-                  {Handlings.map((handling) => (
-                    <div
-                      key={handling.value}
-                      className="flex items-center"
-                      onClick={() => {
+          <div className="py-2 grid grid-cols-3 gap-4">
+            <dt className="text-sm/6 font-medium text-gray-600">Process</dt>
+            <dd className="col-span-2">
+              <div className="flex items-center space-x-6 space-y-0">
+                {Processes.map((each) => (
+                  <div
+                    key={each.value}
+                    className="flex items-center"
+                    onClick={() => {
+                      setState({
+                        ...state,
+                        process: each.value,
+                      });
+                    }}
+                  >
+                    <input
+                      id={each.value}
+                      name="handling"
+                      type="radio"
+                      className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-blue-600 checked:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
+                      checked={each.value === state.process}
+                      value={each.value}
+                      onChange={(e) => {
                         setState({
                           ...state,
-                          handling: handling.value,
+                          process: e.currentTarget.value,
                         });
                       }}
-                    >
-                      <input
-                        id={handling.value}
-                        name="handling"
-                        type="radio"
-                        className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-blue-600 checked:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                        checked={handling.value === state.handling}
-                        value={handling.value}
-                        onChange={(e) => {
-                          setState({
-                            ...state,
-                            handling: e.currentTarget.value,
-                          });
-                        }}
-                      />
-                      <label className="ml-1.5 block text-sm/6 font-medium text-gray-900">
-                        {handling.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </dd>
-            </div>
-          )}
+                    />
+                    <label className="ml-1.5 block text-sm/6 font-medium text-gray-900">
+                      {each.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </dd>
+          </div>
+
+          <div className="py-2 grid grid-cols-3 gap-4">
+            <dt className="text-sm/6 font-medium text-gray-600">Pay on Delivery</dt>
+            <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+              {total.toLocaleString()} B.
+            </dd>
+          </div>
 
           <div className="py-2">
-            <p className="text-sm my-1 font-semibold text-gray-900">Payment</p>
+            <p className="text-sm my-1 font-semibold text-gray-900 py-2">Payment</p>
 
             <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">Cash</dt>
+              <dt
+                className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
+              >
+                Cash
+              </dt>
               <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
                 <input
                   type="text"
@@ -263,26 +277,21 @@ export default function OrderPostDialog({
             </div>
 
             <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">Transfer</dt>
+              <dt
+                className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
+              >
+                Transfer
+              </dt>
               <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
                 <input
                   type="text"
                   className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
                   value={state.payment.transfer}
-                  onChange={(e) => handleCashChanged(e.currentTarget.value)}
+                  onChange={(e) => handleTransferChanged(e.currentTarget.value)}
                 />
               </dd>
             </div>
 
-            <div className="py-1.5 grid grid-cols-3 gap-4">
-              <dt className="pl-1.5 text-sm/6 font-medium text-gray-600">A/C Credit</dt>
-              <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                <input
-                  type="text"
-                  className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                />
-              </dd>
-            </div>
           </div>
         </dl>
       </div >

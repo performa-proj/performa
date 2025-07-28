@@ -267,9 +267,6 @@ export default function OrderForm() {
           onEditing={handleEditOrderlineOpened}
         />
       </div>
-      <div className="hidden lg:flex lg:w-72 border-l border-gray-200">
-
-      </div>
 
       <OrderPostDialog
         open={open}
