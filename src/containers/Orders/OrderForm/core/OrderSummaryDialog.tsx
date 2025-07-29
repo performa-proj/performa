@@ -5,15 +5,28 @@ import { IOrder } from "@/services/Orders/IOrder";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { UserCircleIcon, HashtagIcon } from "@heroicons/react/24/solid";
 
+const Unpaid = () => (
+  <p className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
+    Unpaid
+  </p>
+);
+
+const Paid = () => (
+  <dd className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+    Paid
+  </dd>
+);
+
 export default function OrderSummaryDialog({
-  data,
+  order,
   open,
   onClose,
 }: {
-  data: IOrder;
+  order: IOrder;
   open: boolean;
   onClose: () => void;
 }) {
+  console.log(order);
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
@@ -28,58 +41,52 @@ export default function OrderSummaryDialog({
             transition
             className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-sm sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            <div>
-              <dl>
-
-                <div className="flex px-6 pt-2">
-                  <div className="flex-auto">
-                    <dt className="text-sm/6 font-semibold text-gray-900">Total</dt>
-                    <dd className="mt-1 text-lg font-semibold text-gray-900">{data.total.toLocaleString()}</dd>
-                  </div>
-                  <div className="flex-none pt-7">
-                    {/*<dd className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                      Paid
-                    </dd>*/}
-                    <dd className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20">
-                      Unpaid
-                    </dd>
-                  </div>
-                </div>
-                <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
+            <div className="divide-y divide-gray-200">
+              <div className="px-6 py-2">
+                <div className="flex py-2 gap-x-2">
                   <dt className="flex-none">
-                    <HashtagIcon aria-hidden="true" className="h-6 w-5 text-gray-600" />
+                    <HashtagIcon className="h-6 w-5 text-gray-700" />
                   </dt>
                   <dd className="text-base font-semibold text-gray-900">
-                    <p>{data.transactionID.toString().slice(8)}</p>
+                    <p>{order.transactionID.toString()}</p>
                   </dd>
                 </div>
-                <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                <div className="flex py-2 gap-x-2">
                   <dt className="flex-none">
-                    <UserCircleIcon aria-hidden="true" className="h-6 w-5 text-gray-600" />
+                    <UserCircleIcon className="h-6 w-5 text-gray-400" />
                   </dt>
-                  <dd className="text-sm/6 text-gray-900">
-                    {data.customer?.name || "[Walk-in]"}
+                  <dd className="text-sm/6 font-medium text-gray-600">
+                    {order.customer?.name || "[Walk-in]"}
                   </dd>
                 </div>
-                <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
-                  <p>
-                    <a
-                      href={`/orders/${data._id}/invoice`}
-                      className="text-sm/6 font-semibold text-gray-900 hover:text-gray-700"
-                      target="_blank"
-                    >
-                      Print invoice <span aria-hidden="true">&rarr;</span>
-                    </a>
-                  </p>
-                  <a
-                    href="#"
-                    className="text-sm/6 font-semibold text-gray-900 hover:text-gray-700"
+              </div>
+              <div className="px-6 py-2">
+                <div className="py-2">
+                  <label
+                    className="text-sm/6 font-semibold text-gray-900"
                   >
-                    Print receipt <span aria-hidden="true">&rarr;</span>
-                  </a>
+                    Total
+                  </label>
+                  <div className="flex mt-1">
+                    <p className="flex-auto text-lg font-semibold text-gray-900">{order.total.toLocaleString()}</p>
+                    <div>
+                      <Unpaid />
+                    </div>
+                  </div>
                 </div>
 
-              </dl>
+                <div className="py-2">
+                  <a
+                    href={`/orders/${order._id}/invoice`}
+                    className="text-sm/6 font-semibold text-gray-900 hover:text-gray-600"
+                    target="_blank"
+                  >
+                    Print Invoice <span className="px-1">&rarr;</span>
+                  </a>
+                </div>
+              </div>
+              <div className="px-6 py-2">
+              </div>
             </div>
           </DialogPanel>
         </div>

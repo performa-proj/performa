@@ -99,25 +99,29 @@ export default function OrderForm() {
     const quantity = Number(args[1]) || 1;
     const sku = args[0];
 
-    const data = await Products.Items.searchBySKU({ sku });
+    const nState = {
+      ...state,
+    };
 
-    if (data) {
-      const nState = {
-        ...state,
-      };
+    if (nState.orderData.lines[sku]) {
+      nState.orderData.lines[sku].quantity += quantity;
+      nState.ordering = resolveOrdering(nState.orderData);
+      setState(nState);
+    } else {
+      const data = await Products.Items.searchBySKU({ sku });
 
-      if (nState.orderData.lines[sku]) {
-        nState.orderData.lines[sku].quantity += quantity;
-      } else {
+      if (data) {
         nState.orderData.lines[sku] = {
           quantity,
           line: data,
           sellingAt: undefined,
         };
-      }
 
-      nState.ordering = resolveOrdering(nState.orderData);
-      setState(nState);
+        nState.ordering = resolveOrdering(nState.orderData);
+        setState(nState);
+      } else {
+        // SKU Not Found Handle
+      }
     }
   };
 
@@ -207,8 +211,13 @@ export default function OrderForm() {
       id: string;
       name: string;
       mobile: string;
+      creditDays: number;
+      creditLimit: number;
+      creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
+    process: string;
+    pod: boolean;
     weight: number;
     total: number;
   }) => {
@@ -242,7 +251,7 @@ export default function OrderForm() {
 
   return (
     <div className="flex w-full h-full bg-white">
-      <div className="grow px-4 py-1.5">
+      <div className="grow p-1.5 sm:px-4">
         <div className="py-1.5 flex items-center">
           <CustomerSection
             orderData={state.orderData}
@@ -262,6 +271,7 @@ export default function OrderForm() {
 
         </div>
         <ProductsSection
+          orderData={state.orderData}
           ordering={state.ordering}
           onSearching={handleProductSearching}
           onEditing={handleEditOrderlineOpened}
@@ -291,8 +301,8 @@ export default function OrderForm() {
 
       {state.summary && (
         <OrderSummaryDialog
+          order={state.summary.order}
           open={state.summary !== undefined}
-          data={state.summary.order}
           onClose={handleSummaryClosed}
         />
       )}

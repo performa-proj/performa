@@ -3,14 +3,17 @@
 import React from "react";
 
 import ProductSearch from "@/containers/Products/ProductSearch";
+import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
 import Orderlines from "./core/Orderlines";
 
 export default function ProductsSection({
+  orderData,
   ordering,
   onSearching,
   onEditing,
 }: {
+  orderData: IOrderData;
   ordering: IOrdering;
   onSearching: (value: string) => void;
   onEditing: (sku: string) => void;
