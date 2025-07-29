@@ -1,6 +1,7 @@
 import { IOrderline } from "./IOrderline";
 
 /***************
+** -- States --
 ** 1 - placed
 ** 2 -
 ****************/
@@ -17,11 +18,9 @@ export interface IOrder {
     mobile: string;
   } | undefined;
   orderlines: IOrderline[];
+  pod: boolean;
   weight: number;
   total: number;
-  payment: {
-    dueDate: number;
-  };
   createdAt: Date;
   updatedAt: Date;
 }

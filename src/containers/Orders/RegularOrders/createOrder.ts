@@ -7,8 +7,13 @@ export const createOrder = async (payloads: {
     id: string;
     name: string;
     mobile: string;
+    creditDays: number;
+    creditLimit: number;
+    creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
+  process: string;
+  pod: boolean;
   weight: number;
   total: number;
 }): Promise<IOrder> => {
