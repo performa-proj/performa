@@ -310,7 +310,7 @@ export default function OrderPostDialog({
                     </div>
                   </div>
                   <p className="text-sm/6 font-normal text-gray-900">
-                    Pay on Delivery
+                    Pay on Delivery (POD)
                   </p>
                 </div>
               )}
