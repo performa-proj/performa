@@ -18,7 +18,10 @@ export interface IOrder {
     mobile: string;
   } | undefined;
   orderlines: IOrderline[];
-  pod: boolean;
+  payment: {
+    pod: boolean;
+    dueDate: number;
+  };
   weight: number;
   total: number;
   createdAt: Date;
