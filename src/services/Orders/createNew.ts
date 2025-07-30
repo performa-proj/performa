@@ -48,7 +48,10 @@ export const createNew = async (props: {
       },
     } : {}),
     orderlines,
-    pod,
+    payment: {
+      pod,
+      dueDate,
+    },
     weight,
     total,
     createdAt: now,

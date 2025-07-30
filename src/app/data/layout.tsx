@@ -2,20 +2,19 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { classnames } from "@/containers/core/classnames";
 import UserNav from "@/containers/UserNav";
 
-const Datatypes = [
+const NavsData = [
   { key: 0, name: "Customers", href: "customers", initial: "C" },
   { key: 1, name: "Products", href: "products", initial: "P" },
   { key: 2, name: "Price Structures", href: "pricestructures", initial: "PS" },
   { key: 3, name: "Users", href: "users", initial: "U" },
 ];
 
-const Navs = ({
+const Navigation = ({
   activeIndex,
 }: {
   activeIndex: number;
@@ -29,7 +28,7 @@ const Navs = ({
         <li>
           <div className="text-xs/6 font-semibold text-gray-600">Managing Data</div>
           <ul role="list" className="-mx-2 mt-2 space-y-1">
-            {Datatypes.map((each, index) => (
+            {NavsData.map((each, index) => (
               <li key={index}>
                 <a
                   href={`/data/${each.href}`}
@@ -62,7 +61,7 @@ const Navs = ({
   </>
 );
 
-export default function Layout({
+export default function DataLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -70,8 +69,7 @@ export default function Layout({
   const [navsOpen, setNavsOpen] = React.useState(false);
   const pathname = usePathname();
   const current = pathname.slice(6).toLowerCase();
-
-  const activeIndex = Datatypes.findIndex((each) => current.startsWith(each.href));
+  const activeIndex = NavsData.findIndex((each) => current.startsWith(each.href));
 
   return (
     <div>
@@ -95,7 +93,7 @@ export default function Layout({
               </div>
             </TransitionChild>
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
-              <Navs
+              <Navigation
                 activeIndex={activeIndex}
               />
             </div>
@@ -106,7 +104,7 @@ export default function Layout({
       {/* Static Navs for Desktop */}
       <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:z-50 lg:w-72">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-          <Navs
+          <Navigation
             activeIndex={activeIndex}
           />
         </div>
@@ -117,7 +115,7 @@ export default function Layout({
         <button type="button" onClick={() => setNavsOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
           <Bars3Icon aria-hidden="true" className="size-6" />
         </button>
-        <div className="flex-1 text-sm/6 lg:text-base font-semibold text-gray-900 lg:pl-72">{Datatypes[activeIndex].name}</div>
+        <div className="flex-1 text-sm/6 lg:text-base font-semibold text-gray-900 lg:pl-72">{NavsData[activeIndex].name}</div>
         {/* User */}
         <UserNav />
       </div>
