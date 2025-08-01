@@ -36,7 +36,6 @@ export const createNew = async (props: {
   const dueDate = Number(`${due.getFullYear()}${(due.getMonth() + 1).toString().padStart(2, "0")}${due.getDate().toString().padStart(2, "0")}`)
 
   const data = {
-    sessionID,
     transactionID,
     state: 1,
     level,

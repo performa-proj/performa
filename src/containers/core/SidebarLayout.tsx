@@ -50,7 +50,7 @@ export default function SidebarLayout({
         </div>
       </div>
 
-      <div className="h-full lg:pl-72">
+      <div className="flex flex-col h-full lg:pl-72">
         <div className="sticky top-0 z-40 flex items-center shrink-0 gap-x-6 p-4 sm:px-6 border-b border-gray-200 bg-white">
           <button
             type="button"
@@ -69,7 +69,7 @@ export default function SidebarLayout({
           <UserNav />
         </div>
 
-        <main>
+        <main className="grow w-full">
           {children}
         </main>
       </div>

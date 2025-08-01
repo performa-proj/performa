@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { IOrder } from "@/services/Orders/IOrder";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { UserCircleIcon, HashtagIcon } from "@heroicons/react/24/solid";
@@ -76,13 +77,13 @@ export default function OrderSummaryDialog({
                 </div>
 
                 <div className="py-2">
-                  <a
+                  <Link
                     href={`/orders/${order._id}/invoice`}
                     className="text-sm/6 font-semibold text-gray-900 hover:text-gray-600"
                     target="_blank"
                   >
                     Print Invoice <span className="px-1">&rarr;</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="px-6 py-2">

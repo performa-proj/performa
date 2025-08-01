@@ -8,7 +8,6 @@ import { IOrderline } from "./IOrderline";
 
 export interface IOrder {
   _id: string;
-  sessionID: number;
   transactionID: number;
   state: number;
   level: number;
