@@ -5,53 +5,56 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { classnames } from "@/containers/core/classnames";
 import SidebarLayout from "@/containers/core/SidebarLayout";
+import { ArrowRightStartOnRectangleIcon, ComputerDesktopIcon, QueueListIcon } from "@heroicons/react/24/outline";
 
-const navs = [
-  { id: 1, initial: "PoS", name: "Point of Sales", title: "PoS", href: "/orders/pos" },
-  { id: 2, initial: "PC", name: "Process", title: "Process", href: "/orders/process" },
+const Orders = [
+  { id: 1, name: "Point of Sales", icon: ComputerDesktopIcon, title: "PoS", href: "/orders/pos" },
+  { id: 2, name: "Preorders", icon: QueueListIcon, title: "Preorders", href: "/orders/preorders" },
+  { id: 3, name: "Process", icon: ArrowRightStartOnRectangleIcon, title: "Order Process", href: "/orders/process" },
 ];
 
 const Navs = ({
   activeID,
 }: {
   activeID: number;
-}) => {
-
-  return (
-    <nav className="flex flex-1 flex-col">
-      <ul role="list" className="flex flex-1 flex-col gap-y-7">
-        <li>
-          <div className="text-xs/6 font-semibold text-gray-600">Orders</div>
-          <ul role="list" className="-mx-2 mt-2 space-y-1">
-            {navs.map((each) => (
-              <li key={each.id}>
-                <Link
-                  href={each.href}
+}) => (
+  <nav className="flex flex-1 flex-col">
+    <ul role="list" className="flex flex-1 flex-col gap-y-7">
+      <li>
+        <div className="text-xs/6 font-semibold text-gray-600">Orders</div>
+        <ul role="list" className="-mx-2 mt-2 space-y-1">
+          {Orders.map((each) => (
+            <li key={each.id}>
+              <Link
+                href={each.href}
+                className={classnames(activeID === each.id
+                  ? "bg-gray-50 text-blue-600"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-blue-600",
+                  "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
+                )}
+              >
+                <each.icon
                   className={classnames(activeID === each.id
-                    ? "bg-gray-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-50 hover:text-blue-600",
-                    "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
+                    ? "text-blue-600"
+                    : "text-gray-400 group-hover:text-blue-600",
+                    "size-6 shrink-0",
                   )}
-                >
-                  <span
-                    className={classnames(activeID === each.id
-                      ? "border-blue-600 text-blue-600"
-                      : "border-gray-200 text-gray-400 group-hover:border-blue-600 group-hover:text-blue-600",
-                      "flex size-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium",
-                    )}
-                  >
-                    {each.initial}
-                  </span>
-                  <span className="truncate">{each.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  );
-};
+                />
+                {each.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </li>
+      <li>
+        <div className="text-xs/6 font-semibold text-gray-600">Process</div>
+        <ul role="list" className="-mx-2 mt-2 space-y-1">
+
+        </ul>
+      </li>
+    </ul>
+  </nav>
+);
 
 export default function ManagedOrdersLayout({
   children,
@@ -60,7 +63,7 @@ export default function ManagedOrdersLayout({
 }) {
   let pathname = usePathname();
   pathname = pathname.toLowerCase();
-  const matched = navs.find((each) => each.href === pathname);
+  const matched = Orders.find((each) => each.href === pathname);
   const activeID = matched ? matched.id : -1;
   const title = matched ? matched.title : "";
 

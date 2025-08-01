@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 
@@ -48,12 +49,12 @@ export default function UserNav() {
       >
         {UserNavigation.map((item) => (
           <MenuItem key={item.name}>
-            <a
+            <Link
               href={item.href}
               className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
             >
               {item.name}
-            </a>
+            </Link>
           </MenuItem>
         ))}
       </MenuItems>

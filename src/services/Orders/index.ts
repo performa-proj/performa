@@ -1,9 +1,9 @@
 import { createNew } from "./createNew";
 import { findByID } from "./findByID";
-import { resolveOrdering } from "./resolveOrdering";
+import { findByTransactionID } from "./findByTransactionID";
 
 export const Orders = {
   createNew,
   findByID,
-  resolveOrdering,
+  findByTransactionID,
 };
