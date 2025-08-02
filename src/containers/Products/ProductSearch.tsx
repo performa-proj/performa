@@ -39,7 +39,7 @@ export default function ProductSearch({
         )}
         disabled={isLoading}
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.currentTarget.value)}
         onKeyDown={(e) => {
           if (e.code === "Enter") {
             handleSearch();

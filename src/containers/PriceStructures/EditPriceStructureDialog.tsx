@@ -7,6 +7,7 @@ import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 
 import DialogBase from "../core/DialogBase";
 import { classnames } from "../core/classnames";
+import { resolveNumber } from "../core/resolveNumber";
 
 export default function EditPriceStructureDialog({
   index,
@@ -25,6 +26,7 @@ export default function EditPriceStructureDialog({
 }) {
   const [state, setState] = React.useState({
     title: predata.title,
+    cost: predata.cost.toString(),
     levels: predata.levels.map(each => each.toString()),
   });
 
@@ -37,21 +39,22 @@ export default function EditPriceStructureDialog({
     setState(nState);
   };
 
+  const handleCostChanged = (value: string) => {
+    const nState = {
+      ...state,
+      cost: resolveNumber(state.cost, value),
+    };
+
+    setState(nState);
+  };
+
   const handleLevelsChanged = (index: number, value: string) => {
-    if (value.length === 0) {
-      value = "0"
-    }
+    const nState = {
+      ...state,
+    };
 
-    if (!Number.isNaN(Number(value))) {
-      value = value.trim();
-
-      const nState = {
-        ...state,
-      };
-
-      nState.levels[index] = value;
-      setState(nState);
-    }
+    nState.levels[index] = resolveNumber(state.levels[index], value);
+    setState(nState);
   };
 
   const handleLevelAdded = () => {
@@ -85,6 +88,7 @@ export default function EditPriceStructureDialog({
     const payloads = {
       _id: predata._id,
       title: state.title,
+      cost: Number(state.cost),
       levels: state.levels.map(each => Number(each)),
     };
 
@@ -92,6 +96,7 @@ export default function EditPriceStructureDialog({
     const data = {
       ...predata,
       title: json.title,
+      cost: json.cost,
       levels: json.levels,
       createdAt: new Date(predata.createdAt),
       updatedAt: json.updatedAt,
@@ -125,6 +130,22 @@ export default function EditPriceStructureDialog({
             className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
             value={state.title}
             onChange={e => handleTitleChanged(e.currentTarget.value)}
+          />
+        </div>
+      </div>
+
+      <div className="py-1.5 sm:py-2">
+        <label htmlFor="cost" className="block text-sm/6 font-medium text-gray-900">
+          Cost
+        </label>
+        <div className="mt-2">
+          <input
+            id="cost"
+            name="cost"
+            type="text"
+            className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
+            value={state.cost}
+            onChange={e => handleCostChanged(e.currentTarget.value)}
           />
         </div>
       </div>

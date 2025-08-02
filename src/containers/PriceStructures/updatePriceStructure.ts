@@ -1,10 +1,12 @@
 export const updatePriceStructure = async (payloads: {
   _id: string;
   title: string;
+  cost: number;
   levels: number[];
 }): Promise<{
   _id: string;
   title: string;
+  cost: number;
   levels: number[];
   updatedAt: Date;
 }> => {
@@ -18,6 +20,7 @@ export const updatePriceStructure = async (payloads: {
   const json: {
     _id: string;
     title: string;
+    cost: number;
     levels: number[];
     updatedAt: string;
   } = await response.json();
@@ -25,6 +28,7 @@ export const updatePriceStructure = async (payloads: {
   return {
     _id: json._id,
     title: json.title,
+    cost: json.cost,
     levels: json.levels,
     updatedAt: new Date(json.updatedAt),
   };

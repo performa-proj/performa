@@ -3,9 +3,11 @@ import { IPriceStructure } from "./IPriceStructure";
 
 export const createNew = async ({
   title,
+  cost,
   levels,
 }: {
   title: string;
+  cost: number;
   levels: number[];
 }): Promise<IPriceStructure> => {
   const db = await Data.connectDB();
@@ -13,6 +15,7 @@ export const createNew = async ({
 
   const data = {
     title,
+    cost,
     levels,
     createdAt: now,
     updatedAt: now,
@@ -21,7 +24,7 @@ export const createNew = async ({
   const result = await db.collection(COLLECTION_NAME.PriceStructures).insertOne(data);
 
   return {
-    _id: result.insertedId.toString(),
+    _id: result.insertedId.toHexString(),
     ...data,
   };
 };

@@ -6,6 +6,7 @@ import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 
 import DialogBase from "../core/DialogBase";
 import { classnames } from "../core/classnames";
+import { resolveNumber } from "../core/resolveNumber";
 import { PriceStructures } from ".";
 
 export default function NewPriceStructureDialog({
@@ -19,7 +20,8 @@ export default function NewPriceStructureDialog({
 }) {
   const [state, setState] = React.useState({
     title: "",
-    levels: ["0", "0", "0", "0", "0"],
+    cost: "0",
+    levels: ["0", "0", "0", "0", "0", "0"],
   });
 
   const handleTitleChanged = (value: string) => {
@@ -31,9 +33,18 @@ export default function NewPriceStructureDialog({
     setState(nState);
   };
 
+  const handleCostChanged = (value: string) => {
+    const nState = {
+      ...state,
+      cost: resolveNumber(state.cost, value),
+    };
+
+    setState(nState);
+  };
+
   const handleLevelsChanged = (index: number, value: string) => {
     if (value.length === 0) {
-      value = "0"
+      value = "0";
     }
 
     if (!Number.isNaN(Number(value))) {
@@ -66,17 +77,10 @@ export default function NewPriceStructureDialog({
     setState(nState);
   };
 
-  const handleClose = () => {
-    setState({
-      title: "",
-      levels: ["0", "0", "0", "0", "0"],
-    })
-    onClose();
-  };
-
   const handleStructureCreated = async () => {
     const data = {
       title: state.title,
+      cost: Number(state.cost),
       levels: state.levels.map(each => Number(each)),
     };
 
@@ -84,9 +88,19 @@ export default function NewPriceStructureDialog({
 
     setState({
       title: "",
-      levels: ["0", "0", "0", "0", "0"],
+      cost: "0",
+      levels: ["0", "0", "0", "0", "0", "0"],
     });
     onCreated(json);
+  };
+
+  const handleClose = () => {
+    setState({
+      title: "",
+      cost: "0",
+      levels: ["0", "0", "0", "0", "0", "0"],
+    });
+    onClose();
   };
 
   return (
@@ -111,6 +125,22 @@ export default function NewPriceStructureDialog({
             className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
             value={state.title}
             onChange={e => handleTitleChanged(e.currentTarget.value)}
+          />
+        </div>
+      </div>
+
+      <div className="py-1.5 sm:py-2">
+        <label htmlFor="cost" className="block text-sm/6 font-medium text-gray-900">
+          Cost
+        </label>
+        <div className="mt-2">
+          <input
+            id="cost"
+            name="cost"
+            type="text"
+            className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
+            value={state.cost}
+            onChange={e => handleCostChanged(e.currentTarget.value)}
           />
         </div>
       </div>
