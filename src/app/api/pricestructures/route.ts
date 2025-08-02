@@ -18,6 +18,7 @@ export const PUT = async (request: NextRequest) => {
   const json: {
     _id: string;
     title: string;
+    cost: number;
     levels: number[];
   } = await request.json();
   const data = await PriceStructures.updateByID(json);

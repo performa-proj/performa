@@ -69,7 +69,7 @@ export default function CustomerSearch({
         autoComplete="off"
         disabled={isLoading}
         value={mobile}
-        onChange={(e) => handleMobileChanged(e.target.value)}
+        onChange={(e) => handleMobileChanged(e.currentTarget.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             handleCustomerSearch();

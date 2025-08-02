@@ -4,10 +4,12 @@ import { ObjectId } from "mongodb";
 export const updateByID = async ({
   _id,
   title,
+  cost,
   levels,
 }: {
   _id: string;
   title: string;
+  cost: number;
   levels: number[];
 }) => {
   const db = await Data.connectDB();
@@ -20,6 +22,7 @@ export const updateByID = async ({
   const opt = {
     $set: {
       title,
+      cost,
       levels,
       updatedAt: now,
     },
@@ -30,6 +33,7 @@ export const updateByID = async ({
   return {
     _id,
     title,
+    cost,
     levels,
     updatedAt: now,
   };

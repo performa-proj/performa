@@ -2,6 +2,7 @@ import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 
 export const createPriceStructure = async (payloads: {
   title: string;
+  cost: number;
   levels: number[];
 }): Promise<IPriceStructure> => {
   const response = await fetch("/api/pricestructures", {
