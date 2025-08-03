@@ -11,28 +11,30 @@ export const authenticate = async ({
 }): Promise<{
   success: true;
   data: {
-    _id: string;
+    uid: string;
     mobile: string;
     name: string;
+    email?: string;
     tokenSecrets: string;
   };
 } | {
   success: false;
 }> => {
   const db = await Data.connectDB();
-  const data = await db.collection<IUser>(COLLECTION_NAME.Identities).findOne({ mobile });
+  const data = await db.collection<IUser>(COLLECTION_NAME.Identities).findOne({ "profile.mobile": mobile });
 
-  if (data && data.saltedPassword) {
-    const hashed = Crypto.pbkdf2Sync(password, data.saltedPassword, 10000, 64, "sha256").toString("hex");
+  if (data && data.security.saltedPassword) {
+    const hashed = Crypto.pbkdf2Sync(password, data.security.saltedPassword, 10000, 64, "sha256").toString("hex");
 
-    if (hashed === data.hashedPassword) {
+    if (hashed === data.security.hashedPassword) {
       return {
         success: true,
         data: {
-          _id: data._id.toString(),
-          mobile: data.mobile,
-          name: data.name,
-          tokenSecrets: data.tokenSecrets,
+          uid: data._id.toString(),
+          mobile: data.profile.mobile,
+          name: data.profile.name,
+          email: data.profile.email,
+          tokenSecrets: data.security.tokenSecrets,
         },
       };
     }

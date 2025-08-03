@@ -31,12 +31,15 @@ export async function authenticate(state: {
 
     if (result.success) {
       const ck = await cookies();
+      const rtkSecrets = result.data.tokenSecrets;
 
       const uToken = await createUserToken({
-        uid: result.data._id,
+        uid: result.data.uid,
         mobile: result.data.mobile,
         name: result.data.name,
+        email: result.data.email,
       }, utkSecrets);
+
       ck.set("user_token", uToken, {
         httpOnly: true,
         secure: true,
@@ -46,8 +49,9 @@ export async function authenticate(state: {
       });
 
       const rToken = await createRefreshToken({
-        uid: result.data._id,
-      }, result.data.tokenSecrets);
+        uid: result.data.uid,
+      }, rtkSecrets);
+
       ck.set("refresh_token", rToken, {
         httpOnly: true,
         secure: true,

@@ -17,11 +17,15 @@ export const initUser = async ({
   const tokenSecrets = Crypto.randomBytes(32).toString("hex");
 
   const data = {
-    mobile,
-    name,
-    hashedPassword,
-    saltedPassword,
-    tokenSecrets,
+    profile: {
+      name,
+      mobile,
+    },
+    security: {
+      hashedPassword,
+      saltedPassword,
+      tokenSecrets,
+    },
     createdAt: now,
     updatedAt: now,
   };
@@ -31,10 +35,12 @@ export const initUser = async ({
   if (result.insertedId) {
     return {
       _id: result.insertedId.toString(),
-      name,
-      mobile,
+      profile: {
+        name,
+        mobile,
+      },
     };
   }
 
-  return undefined;
+  return null;
 };

@@ -5,6 +5,7 @@ export const createUserToken = async (
     uid: string;
     name: string;
     mobile: string;
+    email?:string;
   },
   tokenSecrets: string,
   lifehours: number = 22,

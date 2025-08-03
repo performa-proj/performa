@@ -12,8 +12,8 @@ import { NoDataMessage } from "@/containers/core/NoDataMessage";
 import { Products } from "@/containers/Products";
 import { PriceStructures } from "@/containers/PriceStructures";
 import { IProductItem } from "@/services/Products/Items/IProductItem";
-// import ProductsList from "@/containers/Products/ProductsList";
-import ProductsTable from "@/containers/Products/ProductsTable";
+import ProductsList from "@/containers/Products/ProductsList";
+// import ProductsTable from "@/containers/Products/ProductsTable";
 import EditProductDialog from "@/containers/Products/EditProductDialog";
 import NewProductItemDialog from "@/containers/Products/NewProductItemDialog";
 import EditProductItemDialog from "@/containers/Products/EditProductItemDialog";
@@ -237,16 +237,15 @@ export default function Page() {
         <div className="divide-y divide-gray-200 border-b border-gray-200">
           {state.products.length === 0 ? (
             <NoDataMessage />
-          ) : state.products.map((each) => (
-            <ProductsTable
-              key={each._id}
-              product={each}
+          ) : (
+            <ProductsList
+              products={state.products}
               structures={state.structures}
               onEditProductOpened={handleEditProductOpened}
               onNewProductItemOpened={handleNewProductItemOpened}
               onEditProductItemOpened={handleEditProductItemOpened}
             />
-          ))}
+          )}
         </div>
       )}
 

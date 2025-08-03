@@ -106,6 +106,9 @@ export default function EditProductItemDialog({
     onClose();
   };
 
+  const index = structures.findIndex((each) => each._id === state.structureID);
+  const structure = index === -1 ? { levels: [0] } : structures[index];
+
   return (
     <DialogBase
       title="Edit Product Item"
@@ -212,6 +215,16 @@ export default function EditProductItemDialog({
             onChange={(e) => handlePricebaseChanged(e.currentTarget.value)}
           />
         </div>
+        <div className="my-1.5">
+          <p className="divide-x divide-gray-600">
+            [{structure.levels.map((each, index) => (
+              <span
+                key={index}
+                className="px-1 sm:px-1.5 text-sm/4 font-medium text-gray-900"
+              >{Number(state.pricebase) + each}</span>
+            ))}]
+          </p>
+        </div>
       </div>
 
       <div className="py-1.5">
@@ -240,6 +253,16 @@ export default function EditProductItemDialog({
             aria-hidden="true"
             className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-600 sm:size-4"
           />
+        </div>
+        <div className="my-1.5">
+          <p className="divide-x divide-gray-600">
+            [{structure.levels.map((each, index) => (
+              <span
+                key={index}
+                className="px-1 sm:px-1.5 text-sm/4 font-medium text-gray-900"
+              >{each}</span>
+            ))}]
+          </p>
         </div>
       </div>
     </DialogBase >
