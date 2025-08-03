@@ -40,9 +40,11 @@ export const PUT = async (request: NextRequest) => {
       const ck = await cookies();
       const uToken = await createUserToken({
         uid: data._id,
-        mobile: data.mobile,
         name: data.name,
+        mobile: data.mobile,
+        email: data.email,
       }, utkSecrets);
+
       ck.set("user_token", uToken, {
         httpOnly: true,
         secure: true,
@@ -58,6 +60,7 @@ export const PUT = async (request: NextRequest) => {
         rToken = await createRefreshToken({
           uid: data._id,
         }, data.tokenSecrets);
+
         ck.set("refresh_token", rToken, {
           httpOnly: true,
           secure: true,

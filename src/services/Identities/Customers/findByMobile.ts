@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export const findByMobile = async (mobile: string): Promise<ICustomer | null> => {
   const db = await Data.connectDB();
-  const result = await db.collection(COLLECTION_NAME.Identities).findOne<ICustomer>({ mobile });
+  const result = await db.collection(COLLECTION_NAME.Identities).findOne<ICustomer>({ "profile.mobile": mobile });
 
   if (result) {
     if (!result.cac) {
@@ -24,8 +24,7 @@ export const findByMobile = async (mobile: string): Promise<ICustomer | null> =>
 
     return {
       _id: result._id.toString(),
-      mobile: result.mobile,
-      name: result.name,
+      profile: result.profile,
       cac: result.cac,
       createdAt: new Date(result.createdAt),
       updatedAt: new Date(result.updatedAt),

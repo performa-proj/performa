@@ -5,41 +5,25 @@ import React from "react";
 import { ChevronRightIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
-
 import ProductItem from "./ProductItem";
 
 export default function Product({
   product,
-  structures,
+  structuresMap,
   onEditProductOpened,
   onEditProductItemOpened,
   onNewProductItemOpened,
 }: {
   product: IProduct;
-  structures: IPriceStructure[];
+  structuresMap: { [id: string]: IPriceStructure; };
   onEditProductOpened: (productID: string) => void;
   onNewProductItemOpened: (productID: string) => void;
   onEditProductItemOpened: (productID: string, sku: string) => void;
 }) {
-  const {
-    _id,
-    ref,
-    title,
-    items,
-    updatedAt,
-  } = product;
+  const { _id, ref, title, items, updatedAt } = product;
+
   const [isShow, setShow] = React.useState(false);
   const lastUpdated = `${updatedAt.getDate()}/${updatedAt.getMonth() + 1}/${updatedAt.getFullYear()} ${updatedAt.getHours()}:${updatedAt.getMinutes()}:${updatedAt.getSeconds()}`;
-
-  const StructuresMap = structures.reduce((result, each) => {
-    result[each._id] = each;
-
-    return result;
-  }, {} as { [key: string]: IPriceStructure; });
-
-  const handleEditProductItemOpened = (sku: string) => {
-    onEditProductItemOpened(product._id, sku);
-  };
 
   return (
     <div>
@@ -84,8 +68,8 @@ export default function Product({
               <ProductItem
                 key={each.sku}
                 item={each}
-                structure={StructuresMap[each.structureID]}
-                onEditProductItemOpened={handleEditProductItemOpened}
+                structure={structuresMap[each.structureID]}
+                onEditProductItemOpened={() => onEditProductItemOpened(_id, each.sku)}
               />
             ))}
           </div>

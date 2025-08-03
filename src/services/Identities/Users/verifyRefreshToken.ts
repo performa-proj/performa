@@ -1,6 +1,6 @@
-import { COLLECTION_NAME, Data } from "@/db";
-import { jwtVerify, decodeJwt } from "jose";
 import { ObjectId } from "mongodb";
+import { jwtVerify, decodeJwt } from "jose";
+import { COLLECTION_NAME, Data } from "@/db";
 import { IUser } from "./IUser";
 
 export const verifyRefreshToken = async (refreshToken: string): Promise<{
@@ -8,8 +8,9 @@ export const verifyRefreshToken = async (refreshToken: string): Promise<{
   ext: number;
   data: {
     _id: string;
-    mobile: string;
     name: string;
+    mobile: string;
+    email?: string;
     tokenSecrets: string;
   };
 } | {
@@ -23,8 +24,8 @@ export const verifyRefreshToken = async (refreshToken: string): Promise<{
     const data = await db.collection(COLLECTION_NAME.Identities).findOne<IUser>({ _id: new ObjectId(uid) });
 
     if (data) {
-      const secret = new TextEncoder().encode(data.tokenSecrets);
-      await jwtVerify(refreshToken, secret, {
+      const rtkSecrets = new TextEncoder().encode(data.security.tokenSecrets);
+      await jwtVerify(refreshToken, rtkSecrets, {
         algorithms: ["HS256"],
       });
 
@@ -33,9 +34,10 @@ export const verifyRefreshToken = async (refreshToken: string): Promise<{
         ext: decoded.ext as number,
         data: {
           _id: data._id.toString(),
-          mobile: data.mobile,
-          name: data.name,
-          tokenSecrets: data.tokenSecrets,
+          name: data.profile.name,
+          mobile: data.profile.mobile,
+          email: data.profile.email,
+          tokenSecrets: data.security.tokenSecrets,
         },
       };
     }

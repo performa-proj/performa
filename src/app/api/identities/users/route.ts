@@ -7,6 +7,7 @@ export const POST = async (request: NextRequest) => {
     mobile: string;
     password: string;
   } = await request.json();
+
   const data = await Identities.Users.initUser(json);
 
   if (data) {
