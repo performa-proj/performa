@@ -4,6 +4,7 @@ import { deleteByID } from "./deleteByID";
 import { findByID } from "./findByID";
 import { findByRef } from "./findByRef";
 import { list } from "./list";
+import { replace } from "./replace";
 import { updateByID } from "./updateByID";
 
 export const Products = {
@@ -13,5 +14,6 @@ export const Products = {
   findByID,
   findByRef,
   list,
+  replace,
   updateByID,
 };

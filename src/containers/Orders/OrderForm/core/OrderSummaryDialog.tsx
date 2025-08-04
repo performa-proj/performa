@@ -27,7 +27,6 @@ export default function OrderSummaryDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  console.log(order);
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">

@@ -245,9 +245,7 @@ export default function OrderPostDialog({
                       checked={each.value === state.process}
                       value={each.value}
                       onChange={(e) => {
-                        console.log(111);
                         const value = e.currentTarget.value;
-                        console.log(222, value);
                         if (value === "storefront") {
                           setState({
                             ...state,

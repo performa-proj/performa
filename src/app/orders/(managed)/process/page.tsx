@@ -7,7 +7,6 @@ import { IOrder } from "@/services/Orders/IOrder";
 
 export default function Page() {
   const [order, setOrder] = React.useState<IOrder | undefined>(undefined);
-  console.log(order);
 
   return (
     <div className="w-full h-full">

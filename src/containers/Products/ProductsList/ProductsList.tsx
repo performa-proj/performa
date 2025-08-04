@@ -7,25 +7,19 @@ import Product from "./Product";
 
 export default function ProductsList({
   products,
-  structures,
+  structuresMap,
   onEditProductOpened,
   onNewProductItemOpened,
   onEditProductItemOpened,
   onDetail,
 }: {
   products: IProduct[];
-  structures: IPriceStructure[];
+  structuresMap: { [id: string]: IPriceStructure; };
   onEditProductOpened: (productID: string) => void;
   onNewProductItemOpened: (productID: string) => void;
   onEditProductItemOpened: (productID: string, sku: string) => void;
   onDetail: (productID: string) => void;
 }) {
-  const structuresMap = structures.reduce((result, each) => {
-    result[each._id] = each;
-
-    return result;
-  }, {} as { [key: string]: IPriceStructure; });
-
   if (products.length === 0) {
     return (<NoDataMessage />);
   }
