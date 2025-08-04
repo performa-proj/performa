@@ -13,8 +13,10 @@ export const createNew = async ({
   const now = new Date();
 
   const data = {
-    mobile,
-    name,
+    profile: {
+      mobile,
+      name,
+    },
     cac: initialCAC(),
     createdAt: now,
     updatedAt: now,

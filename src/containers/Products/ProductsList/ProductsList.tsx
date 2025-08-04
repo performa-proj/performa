@@ -2,6 +2,7 @@
 
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
+import { NoDataMessage } from "@/containers/core/NoDataMessage";
 import Product from "./Product";
 
 export default function ProductsList({
@@ -10,12 +11,14 @@ export default function ProductsList({
   onEditProductOpened,
   onNewProductItemOpened,
   onEditProductItemOpened,
+  onDetail,
 }: {
   products: IProduct[];
   structures: IPriceStructure[];
   onEditProductOpened: (productID: string) => void;
   onNewProductItemOpened: (productID: string) => void;
   onEditProductItemOpened: (productID: string, sku: string) => void;
+  onDetail: (productID: string) => void;
 }) {
   const structuresMap = structures.reduce((result, each) => {
     result[each._id] = each;
@@ -23,8 +26,12 @@ export default function ProductsList({
     return result;
   }, {} as { [key: string]: IPriceStructure; });
 
+  if (products.length === 0) {
+    return (<NoDataMessage />);
+  }
+
   return (
-    <>
+    <div className="divide-y divide-gray-200 border-b border-gray-200">
       {products.map((each) => (
         <Product
           key={each._id}
@@ -33,8 +40,9 @@ export default function ProductsList({
           onEditProductOpened={onEditProductOpened}
           onNewProductItemOpened={onNewProductItemOpened}
           onEditProductItemOpened={onEditProductItemOpened}
+          onDetail={onDetail}
         />
       ))}
-    </>
-  )
+    </div>
+  );
 }

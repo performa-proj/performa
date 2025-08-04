@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { ChevronRightIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon, ChevronUpIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 import ProductItem from "./ProductItem";
@@ -13,15 +13,16 @@ export default function Product({
   onEditProductOpened,
   onEditProductItemOpened,
   onNewProductItemOpened,
+  onDetail,
 }: {
   product: IProduct;
   structuresMap: { [id: string]: IPriceStructure; };
   onEditProductOpened: (productID: string) => void;
   onNewProductItemOpened: (productID: string) => void;
   onEditProductItemOpened: (productID: string, sku: string) => void;
+  onDetail: (productID: string) => void;
 }) {
   const { _id, ref, title, items, updatedAt } = product;
-
   const [isShow, setShow] = React.useState(false);
   const lastUpdated = `${updatedAt.getDate()}/${updatedAt.getMonth() + 1}/${updatedAt.getFullYear()} ${updatedAt.getHours()}:${updatedAt.getMinutes()}:${updatedAt.getSeconds()}`;
 
@@ -29,16 +30,16 @@ export default function Product({
     <div>
       <div className="flex px-4 sm:px-6 py-3">
         <button
-          className="cursor-pointer"
+          className="cursor-pointer text-gray-600 hover:text-gray-900"
           onClick={() => setShow(!isShow)}
         >
           {isShow
-            ? (<ChevronDownIcon aria-hidden="true" className="size-4 sm:size-5 flex-none text-gray-900" />)
-            : (<ChevronRightIcon aria-hidden="true" className="size-4 sm:size-5 flex-none text-gray-900" />)
+            ? (<ChevronUpIcon className="size-4.5 sm:size-5" />)
+            : (<ChevronDownIcon className="size-4.5 sm:size-5" />)
           }
         </button>
         <div
-          className="flex-auto mt-1.5 px-2"
+          className="flex-1 mt-1.5 px-2"
           onClick={() => onEditProductOpened(_id)}
         >
           <p className="text-xs/4 font-semibold text-gray-600">REF: {ref}</p>
@@ -47,9 +48,18 @@ export default function Product({
             Last Updated: <time dateTime={lastUpdated}>{lastUpdated}</time>
           </p>
         </div>
+        <div className="flex flex-col justify-center">
+          <button
+            type="button"
+            className="cursor-pointer text-gray-600 hover:text-gray-900"
+            onClick={() => onDetail(_id)}
+          >
+            <ChevronRightIcon className="size-4.5 sm:size-5" />
+          </button>
+        </div>
       </div>
       {isShow && (
-        <div>
+        <div className="border-b mb-1.5 border-gray-200">
           <div className="flex px-6 sm:px-8 py-2 items-center justify-between bg-gray-100">
             <p className="text-sm/4 font-semibold text-gray-900">Items</p>
             <button

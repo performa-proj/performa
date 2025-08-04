@@ -60,8 +60,8 @@ export default function OrderForm() {
       ...state.orderData,
       customer: {
         id: identity._id,
-        name: identity.name,
-        mobile: identity.mobile,
+        name: identity.profile.name,
+        mobile: identity.profile.mobile,
         creditDays: identity.cac.creditDays,
         creditLimit: identity.cac.creditLimit,
         creditSpent: identity.cac.creditSpent,

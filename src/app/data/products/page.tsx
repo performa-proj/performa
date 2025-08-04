@@ -3,20 +3,22 @@
 import React from "react";
 
 import NewProductButton from "@/containers/Products/NewProductButton";
+import { ListBulletIcon } from "@heroicons/react/24/solid";
 
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 import { ReloadButton } from "@/containers/core/ReloadButton";
 import { LoadingMessage } from "@/containers/core/LoadingMessage";
-import { NoDataMessage } from "@/containers/core/NoDataMessage";
 import { Products } from "@/containers/Products";
 import { PriceStructures } from "@/containers/PriceStructures";
 import { IProductItem } from "@/services/Products/Items/IProductItem";
+import ProductDetail from "@/containers/Products/ProductDetail";
 import ProductsList from "@/containers/Products/ProductsList";
 // import ProductsTable from "@/containers/Products/ProductsTable";
 import EditProductDialog from "@/containers/Products/EditProductDialog";
 import NewProductItemDialog from "@/containers/Products/NewProductItemDialog";
 import EditProductItemDialog from "@/containers/Products/EditProductItemDialog";
+import { TableCellsIcon } from "@heroicons/react/24/outline";
 
 export default function Page() {
   const [state, setState] = React.useState<{
@@ -48,6 +50,13 @@ export default function Page() {
     index: -1,
     data: undefined,
   });
+  const [detailProduct, setDetailProduct] = React.useState<{
+    index: number,
+    data: IProduct | undefined;
+  }>({
+    index: -1,
+    data: undefined,
+  });
 
   React.useEffect(() => {
     loadData();
@@ -62,6 +71,7 @@ export default function Page() {
 
       return each;
     });
+
     const structures = (await PriceStructures.listPriceStructures()).map(each => {
       each.createdAt = new Date(each.createdAt);
       each.updatedAt = new Date(each.updatedAt);
@@ -70,6 +80,7 @@ export default function Page() {
     });
 
     setState({
+      ...state,
       products,
       structures,
     });
@@ -77,8 +88,17 @@ export default function Page() {
     setLoading(false);
   };
 
+  const handleEditProductOpened = (productID: string) => {
+    const index = state.products.findIndex((each) => each._id === productID);
+    setEditProduct({
+      index,
+      data: state.products[index],
+    });
+  };
+
   const handleProductCreated = (product: IProduct) => {
     setState({
+      ...state,
       products: [...state.products, product],
       structures: [...state.structures],
     });
@@ -86,6 +106,7 @@ export default function Page() {
 
   const handleProductDeleted = () => {
     const nState = {
+      ...state,
       products: [...state.products],
       structures: [...state.structures],
     };
@@ -100,6 +121,7 @@ export default function Page() {
 
   const handleProductUpdated = (product: IProduct) => {
     const nState = {
+      ...state,
       products: [...state.products],
       structures: [...state.structures],
     };
@@ -110,6 +132,27 @@ export default function Page() {
       index: -1,
       data: undefined,
     });
+  };
+
+  const handleNewProductItemOpened = (productID: string) => {
+    const index = state.products.findIndex((each) => each._id === productID);
+    setCreateProductItem({
+      index,
+      data: state.products[index],
+    });
+  };
+
+  const handleEditProductItemOpened = (productID: string, sku: string) => {
+    const index = state.products.findIndex((each) => each._id === productID);
+
+    if (index >= 0) {
+      const itemIndex = state.products[index].items.findIndex((each) => each.sku === sku);
+
+      setEditProductItem({
+        index,
+        data: state.products[index].items[itemIndex],
+      });
+    }
   };
 
   const handleProductItemCreated = (data: {
@@ -166,87 +209,63 @@ export default function Page() {
     });
   };
 
-  const handleEditProductOpened = (productID: string) => {
+  const handleDetail = (productID: string) => {
     const index = state.products.findIndex((each) => each._id === productID);
-    setEditProduct({
+    setDetailProduct({
       index,
       data: state.products[index],
     });
-  };
-
-  const handleNewProductItemOpened = (productID: string) => {
-    const index = state.products.findIndex((each) => each._id === productID);
-    setCreateProductItem({
-      index,
-      data: state.products[index],
-    });
-  };
-
-  const handleEditProductItemOpened = (productID: string, sku: string) => {
-    const index = state.products.findIndex((each) => each._id === productID);
-
-    if (index >= 0) {
-      const itemIndex = state.products[index].items.findIndex((each) => each.sku === sku);
-
-      setEditProductItem({
-        index,
-        data: state.products[index].items[itemIndex],
-      });
-    }
+    console.log(detailProduct)
   };
 
   return (
     <div className="w-full">
-      <div className="flex px-4 sm:px-6 py-2 border-b border-gray-200">
-        <div className="flex flex-1 items-center">
-          <p className="text-sm font-medium text-gray-900">View:</p>
-          <span className="isolate inline-flex rounded-md px-2">
-            <button
-              type="button"
-              className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              Product
-            </button>
-            <button
-              type="button"
-              className="relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              Item
-            </button>
-            <button
-              type="button"
-              className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              Days
-            </button>
-          </span>
-        </div>
-        <div className="flex gap-x-2">
-          <NewProductButton
-            onCreated={handleProductCreated}
-          />
-          <ReloadButton
-            isLoading={isLoading}
-            onClick={loadData}
-          />
-        </div>
-      </div>
-      {isLoading ? (
-        <LoadingMessage />
+      {detailProduct.data ? (
+        <ProductDetail
+          product={detailProduct.data}
+        />
       ) : (
-        <div className="divide-y divide-gray-200 border-b border-gray-200">
-          {state.products.length === 0 ? (
-            <NoDataMessage />
-          ) : (
-            <ProductsList
+        <>
+          <div className="flex px-4 sm:px-6 py-2 border-b border-gray-200">
+            <div className="flex flex-1 items-center">
+              <div className="flex gap-x-1.5">
+                <button
+                  type="button"
+                  className="rounded p-1 ring-1 bg-white ring-blue-600 text-blue-600"
+                >
+                  <ListBulletIcon aria-hidden="true" className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  className="rounded p-1 ring-1 bg-white ring-gray-300 text-gray-600 hover:text-gray-600"
+                >
+                  <TableCellsIcon aria-hidden="true" className="size-4" />
+                </button>
+              </div>
+            </div>
+            <div className="flex gap-x-2">
+              <NewProductButton
+                onCreated={handleProductCreated}
+              />
+              <ReloadButton
+                isLoading={isLoading}
+                onClick={loadData}
+              />
+            </div>
+          </div>
+
+          {isLoading ?
+            (<LoadingMessage />) :
+            (<ProductsList
               products={state.products}
               structures={state.structures}
               onEditProductOpened={handleEditProductOpened}
               onNewProductItemOpened={handleNewProductItemOpened}
               onEditProductItemOpened={handleEditProductItemOpened}
-            />
-          )}
-        </div>
+              onDetail={handleDetail}
+            />)
+          }
+        </>
       )}
 
       {editProduct.data && (
