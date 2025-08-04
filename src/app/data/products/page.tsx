@@ -23,10 +23,10 @@ import { TableCellsIcon } from "@heroicons/react/24/outline";
 export default function Page() {
   const [state, setState] = React.useState<{
     products: IProduct[];
-    structures: IPriceStructure[];
+    structuresMap: { [id: string]: IPriceStructure; };
   }>({
     products: [],
-    structures: [],
+    structuresMap: {},
   });
   const [isLoading, setLoading] = React.useState(false);
   const [editProduct, setEditProduct] = React.useState<{
@@ -72,17 +72,17 @@ export default function Page() {
       return each;
     });
 
-    const structures = (await PriceStructures.listPriceStructures()).map(each => {
+    const structuresMap = (await PriceStructures.listPriceStructures()).reduce((result, each) => {
       each.createdAt = new Date(each.createdAt);
       each.updatedAt = new Date(each.updatedAt);
+      result[each._id] = each;
 
-      return each;
-    });
+      return result;
+    }, {} as { [key: string]: IPriceStructure; });
 
     setState({
-      ...state,
       products,
-      structures,
+      structuresMap,
     });
 
     setLoading(false);
@@ -98,9 +98,8 @@ export default function Page() {
 
   const handleProductCreated = (product: IProduct) => {
     setState({
-      ...state,
       products: [...state.products, product],
-      structures: [...state.structures],
+      structuresMap: state.structuresMap,
     });
   };
 
@@ -108,7 +107,7 @@ export default function Page() {
     const nState = {
       ...state,
       products: [...state.products],
-      structures: [...state.structures],
+      structuresMap: state.structuresMap,
     };
     nState.products.splice(editProduct.index, 1);
 
@@ -123,7 +122,7 @@ export default function Page() {
     const nState = {
       ...state,
       products: [...state.products],
-      structures: [...state.structures],
+      structuresMap: state.structuresMap,
     };
     nState.products[editProduct.index] = product;
 
@@ -215,7 +214,27 @@ export default function Page() {
       index,
       data: state.products[index],
     });
-    console.log(detailProduct)
+  };
+
+  const handleDetailBack = () => {
+    setDetailProduct({
+      index: -1,
+      data: undefined,
+    });
+  };
+
+  const handlePriceUpdate = (data: { product: IProduct; }) => {
+    const nState = {
+      products: [...state.products],
+      structuresMap: { ...state.structuresMap },
+    };
+    nState.products[detailProduct.index] = data.product;
+    setState(nState);
+
+    setDetailProduct({
+      index: -1,
+      data: undefined,
+    });
   };
 
   return (
@@ -223,6 +242,9 @@ export default function Page() {
       {detailProduct.data ? (
         <ProductDetail
           product={detailProduct.data}
+          structuresMap={state.structuresMap}
+          onBack={handleDetailBack}
+          onUpdate={handlePriceUpdate}
         />
       ) : (
         <>
@@ -258,7 +280,7 @@ export default function Page() {
             (<LoadingMessage />) :
             (<ProductsList
               products={state.products}
-              structures={state.structures}
+              structuresMap={state.structuresMap}
               onEditProductOpened={handleEditProductOpened}
               onNewProductItemOpened={handleNewProductItemOpened}
               onEditProductItemOpened={handleEditProductItemOpened}
@@ -287,7 +309,7 @@ export default function Page() {
           metadata={{
             product: createProductItem.data,
           }}
-          structures={state.structures}
+          structures={Object.values(state.structuresMap)}
           onCreated={handleProductItemCreated}
           onClose={() => setCreateProductItem({
             index: -1,
@@ -302,7 +324,7 @@ export default function Page() {
             product: state.products[editProductItem.index],
           }}
           predata={editProductItem.data}
-          structures={state.structures}
+          structures={Object.values(state.structuresMap)}
           open={editProductItem !== undefined}
           onDeleted={handleProductItemDeleted}
           onUpdated={handleProductItemUpdated}

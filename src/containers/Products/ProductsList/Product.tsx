@@ -24,6 +24,7 @@ export default function Product({
 }) {
   const { _id, ref, title, items, updatedAt } = product;
   const [isShow, setShow] = React.useState(false);
+  console.log(product);
   const lastUpdated = `${updatedAt.getDate()}/${updatedAt.getMonth() + 1}/${updatedAt.getFullYear()} ${updatedAt.getHours()}:${updatedAt.getMinutes()}:${updatedAt.getSeconds()}`;
 
   return (
