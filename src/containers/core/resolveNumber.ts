@@ -14,7 +14,13 @@ export const resolveNumber = (value: string, nValue: string) => {
   const numb = Number(nValue);
 
   if (!Number.isNaN(numb)) {
-    return nValue;
+    if (nValue[nValue.length - 1] === ".") {
+      return nValue;
+    } else if (nValue[nValue.length - 1] === " ") {
+      return nValue.slice(0, -1);
+    }
+
+    return numb.toString();
   }
 
   return value;
