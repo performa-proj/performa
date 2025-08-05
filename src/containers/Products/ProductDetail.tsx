@@ -40,7 +40,8 @@ export default function ProductDetail({
     }
 
     const { cost, levels } = structure;
-    const sugpb = (Number(state.sugPricebase) * weight) + cost;
+    const sugPricebase = Number(state.sugPricebase);
+    const sugpb = sugPricebase > 0 ? (sugPricebase * weight) + cost : 0;
     const pricelevels = levels.map(l => Number(state.pricebases[index]) + l);
     let pbkg = (Number(state.pricebases[index]) - cost) / weight;
 
@@ -95,7 +96,7 @@ export default function ProductDetail({
 
   for (let i = 0; i < levelsMax; i++) {
     levels.push((
-      <th key={i} scope="col" rowSpan={2} className="px-2 text-left text-sm font-semibold text-gray-900">{i + 1}</th>
+      <th key={i} scope="col" rowSpan={2} className="p-1.5 text-center text-sm font-medium text-gray-900">{i + 1}</th>
     ));
   }
 
@@ -113,49 +114,72 @@ export default function ProductDetail({
         </p>
       </div>
       <div className="px-4 sm:px-6 py-3">
-        <p className="text-base font-medium text-gray-900">
+        <p className="text-base font-semibold text-gray-900">
           Price Structure
         </p>
-        <table className="relative min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 bg-white">
           <thead>
             <tr>
-              <th scope="col" rowSpan={2} className="px-2 pt-1.5 text-left text-sm font-semibold text-gray-900">SKU</th>
-              <th scope="col" rowSpan={2} className="px-2 pt-1.5 text-left text-sm font-semibold text-gray-900">PB (Price Base)</th>
-              <th scope="col" className="px-2 pt-1.5 text-left text-sm font-semibold text-gray-900">SUG. PB</th>
-              <th scope="col" rowSpan={2} className="px-2 pt-1.5 text-left text-sm font-semibold text-gray-600">PB / KG (EXC.)</th>
+              <th scope="col" rowSpan={2} className="p-1.5 text-left text-sm font-medium text-gray-900">SKU</th>
+              <th scope="col" className="px-1.5 pt-1.5 text-center text-sm font-medium text-gray-900 min-w-24">Price Base</th>
+              <th scope="col" className="hidden sm:table-cell px-1.5 pt-1.5 text-center text-sm font-medium text-gray-400">SUG. PB</th>
+              <th scope="col" className="px-1.5 pt-1.5 text-center text-sm font-medium text-gray-900">PB / KG</th>
               {levels}
             </tr>
             <tr>
-              <th scope="col" className="px-2 pb-1.5 text-left text-sm font-semibold text-gray-900">
-                <input
-                  id="sug-pricebase"
-                  name="sug-pricebase"
-                  type="text"
-                  value={state.sugPricebase}
-                  onChange={(e) => handleSUGPBChanged(e.currentTarget.value)}
-                  className="block grow min-w-0 bg-white p-0 text-sm text-gray-900 focus:outline-0"
-                />
+              <th scope="col" className="px-1.5 pb-1.5 min-w-24">
+                <div className="flex items-center justify-center">
+                  <span className="hidden sm:inline text-sm font-medium text-gray-900">(PB)</span>
+                  <input
+                    name="sug-pricebase"
+                    type="text"
+                    value={state.sugPricebase}
+                    onChange={(e) => handleSUGPBChanged(e.currentTarget.value)}
+                    className="block sm:hidden w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
+                  />
+                </div>
+              </th>
+              <th scope="col" className="hidden sm:table-cell px-1.5 pb-1.5">
+                <div className="flex items-center justify-center">
+                  <input
+                    name="sug-pricebase"
+                    type="text"
+                    value={state.sugPricebase}
+                    onChange={(e) => handleSUGPBChanged(e.currentTarget.value)}
+                    className="block w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
+                  />
+                </div>
+              </th>
+              <th scope="col" className="px-1.5 pb-1.5 text-center text-sm font-medium text-gray-900 min-w-24">
+                (Exc. Cost)
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {lines.map((line, index) => (
               <tr key={line.sku}>
-                <td className="px-2 py-2 text-left text-sm font-medium text-gray-900">{line.sku}</td>
-                <td className="px-2 py-2 text-left text-sm font-medium text-gray-900">
-                  <input
-                    id={line.sku + "pricebase"}
-                    name="pricebase"
-                    type="text"
-                    value={state.pricebases[index]}
-                    onChange={(e) => handlePriceBaseChanged(index, e.currentTarget.value)}
-                    className="block grow min-w-0 bg-white p-0 text-sm text-gray-900 focus:outline-0"
-                  />
+                <td className="px-1.5 py-2 text-left text-sm font-medium text-gray-900">{line.sku}</td>
+                <td className="px-1.5 py-2">
+                  <div className="flex items-center justify-center">
+                    <input
+                      id={line.sku + "pricebase"}
+                      name="pricebase"
+                      type="text"
+                      value={state.pricebases[index]}
+                      onChange={(e) => handlePriceBaseChanged(index, e.currentTarget.value)}
+                      className="block w-18 text-center bg-white p-0 text-sm font-medium text-blue-600 focus:outline-0"
+                    />
+                  </div>
+                  <div className="flex sm:hidden items-center justify-center">
+                    <span className="inline sm:hidden text-sm font-medium text-gray-400">
+                      {line.sugpb.toFixed(4)}
+                    </span>
+                  </div>
                 </td>
-                <td className="px-2 py-2 text-left text-sm font-medium text-gray-400">{line.sugpb.toFixed(4)}</td>
-                <td className="px-2 py-2 text-left text-sm font-medium text-gray-900">{line.pbkg.toFixed(4)}</td>
+                <td className="hidden sm:table-cell px-2 py-2 text-center text-sm font-medium text-gray-400">{line.sugpb.toFixed(4)}</td>
+                <td className="px-2 py-2 text-center text-sm font-medium text-gray-900">{line.pbkg.toFixed(4)}</td>
                 {line.pricelevels.map((each, index) => (
-                  <td key={index} className="px-2 py-2 text-left text-sm font-medium text-gray-900">{each}</td>
+                  <td key={index} className="px-1.5 py-2 text-center text-sm font-medium text-gray-900">{each}</td>
                 ))}
               </tr>
             ))}
