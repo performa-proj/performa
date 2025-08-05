@@ -7,6 +7,8 @@ import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 import { resolveNumber } from "../core/resolveNumber";
 import { updateAllPricebases } from "./updateAllPricebases";
 
+const ShownLevelsIndex = [3, 6];
+
 export default function ProductDetail({
   product,
   structuresMap,
@@ -95,9 +97,15 @@ export default function ProductDetail({
   };
 
   for (let i = 0; i < levelsMax; i++) {
-    levels.push((
-      <th key={i} scope="col" rowSpan={2} className="p-1.5 text-center text-sm font-medium text-gray-900">{i + 1}</th>
-    ));
+    if (ShownLevelsIndex.includes(i + 1)) {
+      levels.push((
+        <th key={i} scope="col" rowSpan={2} className="p-1.5 text-center text-sm font-medium text-gray-900">{i + 1}</th>
+      ));
+    } else {
+      levels.push((
+        <th key={i} scope="col" rowSpan={2} className="hidden sm:table-cell p-1.5 text-center text-sm font-medium text-gray-900">{i + 1}</th>
+      ));
+    }
   }
 
   return (
@@ -133,9 +141,10 @@ export default function ProductDetail({
                   <input
                     name="sug-pricebase"
                     type="text"
+                    autoComplete="off"
+                    className="block sm:hidden w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
                     value={state.sugPricebase}
                     onChange={(e) => handleSUGPBChanged(e.currentTarget.value)}
-                    className="block sm:hidden w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
                   />
                 </div>
               </th>
@@ -144,9 +153,10 @@ export default function ProductDetail({
                   <input
                     name="sug-pricebase"
                     type="text"
+                    autoComplete="off"
+                    className="block w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
                     value={state.sugPricebase}
                     onChange={(e) => handleSUGPBChanged(e.currentTarget.value)}
-                    className="block w-18 text-center bg-white p-0 text-sm font-semibold text-blue-600 focus:outline-0"
                   />
                 </div>
               </th>
@@ -165,9 +175,10 @@ export default function ProductDetail({
                       id={line.sku + "pricebase"}
                       name="pricebase"
                       type="text"
+                      autoComplete="off"
+                      className="block w-18 text-center bg-white p-0 text-sm font-medium text-blue-600 focus:outline-0"
                       value={state.pricebases[index]}
                       onChange={(e) => handlePriceBaseChanged(index, e.currentTarget.value)}
-                      className="block w-18 text-center bg-white p-0 text-sm font-medium text-blue-600 focus:outline-0"
                     />
                   </div>
                   <div className="flex sm:hidden items-center justify-center">
@@ -178,9 +189,12 @@ export default function ProductDetail({
                 </td>
                 <td className="hidden sm:table-cell px-2 py-2 text-center text-sm font-medium text-gray-400">{line.sugpb.toFixed(4)}</td>
                 <td className="px-2 py-2 text-center text-sm font-medium text-gray-900">{line.pbkg.toFixed(4)}</td>
-                {line.pricelevels.map((each, index) => (
-                  <td key={index} className="px-1.5 py-2 text-center text-sm font-medium text-gray-900">{each}</td>
-                ))}
+                {line.pricelevels.map((each, index) => {
+                  if (ShownLevelsIndex.includes(index + 1))
+                    return (<td key={index} className="px-1.5 py-2 text-center text-sm font-medium text-gray-900">{each}</td>);
+                  else
+                    return (<td key={index} className="hidden sm:table-cell px-1.5 py-2 text-center text-sm font-medium text-gray-900">{each}</td>);
+                })}
               </tr>
             ))}
           </tbody>

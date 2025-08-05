@@ -14,11 +14,12 @@ import { PriceStructures } from "@/containers/PriceStructures";
 import { IProductItem } from "@/services/Products/Items/IProductItem";
 import ProductDetail from "@/containers/Products/ProductDetail";
 import ProductsList from "@/containers/Products/ProductsList";
-// import ProductsTable from "@/containers/Products/ProductsTable";
+import ProductsTable from "@/containers/Products/ProductsTable";
 import EditProductDialog from "@/containers/Products/EditProductDialog";
 import NewProductItemDialog from "@/containers/Products/NewProductItemDialog";
 import EditProductItemDialog from "@/containers/Products/EditProductItemDialog";
 import { TableCellsIcon } from "@heroicons/react/24/outline";
+import { classnames } from "@/containers/core/classnames";
 
 export default function Page() {
   const [state, setState] = React.useState<{
@@ -29,6 +30,7 @@ export default function Page() {
     structuresMap: {},
   });
   const [isLoading, setLoading] = React.useState(false);
+  const [selected, setSelected] = React.useState<"list" | "table">("table");
   const [editProduct, setEditProduct] = React.useState<{
     index: number,
     data: IProduct | undefined;
@@ -253,13 +255,17 @@ export default function Page() {
               <div className="flex gap-x-1.5">
                 <button
                   type="button"
-                  className="rounded p-1 ring-1 bg-white ring-blue-600 text-blue-600"
+                  className={classnames(selected === "list" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 text-gray-600",
+                    "cursor-pointer rounded p-1 ring-1")}
+                  onClick={() => setSelected("list")}
                 >
                   <ListBulletIcon aria-hidden="true" className="size-4" />
                 </button>
                 <button
                   type="button"
-                  className="rounded p-1 ring-1 bg-white ring-gray-300 text-gray-600 hover:text-gray-600"
+                  className={classnames(selected === "table" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 text-gray-600",
+                    "cursor-pointer rounded p-1 ring-1")}
+                  onClick={() => setSelected("table")}
                 >
                   <TableCellsIcon aria-hidden="true" className="size-4" />
                 </button>
@@ -278,14 +284,24 @@ export default function Page() {
 
           {isLoading ?
             (<LoadingMessage />) :
-            (<ProductsList
-              products={state.products}
-              structuresMap={state.structuresMap}
-              onEditProductOpened={handleEditProductOpened}
-              onNewProductItemOpened={handleNewProductItemOpened}
-              onEditProductItemOpened={handleEditProductItemOpened}
-              onDetail={handleDetail}
-            />)
+            (selected === "list" ?
+              (<ProductsList
+                products={state.products}
+                structuresMap={state.structuresMap}
+                onEditProductOpened={handleEditProductOpened}
+                onNewProductItemOpened={handleNewProductItemOpened}
+                onEditProductItemOpened={handleEditProductItemOpened}
+                onDetail={handleDetail}
+              />) :
+              (<ProductsTable
+                products={state.products}
+                structuresMap={state.structuresMap}
+                onEditProductOpened={handleEditProductOpened}
+                onNewProductItemOpened={handleNewProductItemOpened}
+                onEditProductItemOpened={handleEditProductItemOpened}
+                onDetail={handleDetail}
+              />)
+            )
           }
         </>
       )}

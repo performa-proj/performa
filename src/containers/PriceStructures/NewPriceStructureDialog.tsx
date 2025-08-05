@@ -122,6 +122,7 @@ export default function NewPriceStructureDialog({
             id="title"
             name="title"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
             value={state.title}
             onChange={e => handleTitleChanged(e.currentTarget.value)}
@@ -138,6 +139,7 @@ export default function NewPriceStructureDialog({
             id="cost"
             name="cost"
             type="text"
+            autoComplete="off"
             className="block w-full rounded-md bg-white px-3 py-1.5 text-base sm:text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
             value={state.cost}
             onChange={e => handleCostChanged(e.currentTarget.value)}
