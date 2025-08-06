@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { IOrder } from "@/services/Orders/IOrder";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { UserCircleIcon, HashtagIcon } from "@heroicons/react/24/solid";
 
@@ -23,7 +23,7 @@ export default function OrderSummaryDialog({
   open,
   onClose,
 }: {
-  order: IOrder;
+  order: IPlacedOrder;
   open: boolean;
   onClose: () => void;
 }) {

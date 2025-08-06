@@ -2,14 +2,14 @@
 
 import React from "react";
 import { classnames } from "@/containers/core/classnames";
-import { IOrder } from "@/services/Orders/IOrder";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
 
 export default function Orderlines({
   order,
   counts,
   onCounter,
 }: {
-  order: IOrder;
+  order: IPlacedOrder;
   counts: number[];
   onCounter: (index: number) => void;
 }) {

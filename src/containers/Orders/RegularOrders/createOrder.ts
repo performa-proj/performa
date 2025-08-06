@@ -1,5 +1,5 @@
-import { IOrder } from "@/services/Orders/IOrder";
-import { IOrderline } from "@/services/Orders/IOrderline";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
+import { IOrderline } from "@/services/PlacedOrders/IOrderline";
 
 export const createOrder = async (payloads: {
   level: number;
@@ -16,7 +16,7 @@ export const createOrder = async (payloads: {
   pod: boolean;
   weight: number;
   total: number;
-}): Promise<IOrder> => {
+}): Promise<IPlacedOrder> => {
   const response = await fetch("/api/orders/ro", {
     method: "POST",
     headers: {
@@ -24,7 +24,7 @@ export const createOrder = async (payloads: {
     },
     body: JSON.stringify(payloads),
   });
-  const json: IOrder = await response.json();
+  const json: IPlacedOrder = await response.json();
   json.createdAt = new Date(json.createdAt);
   json.updatedAt = new Date(json.updatedAt);
 

@@ -3,12 +3,12 @@
 import React from "react";
 
 import { RegularOrders } from "@/containers/Orders/RegularOrders";
-import { IOrder } from "@/services/Orders/IOrder";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
 
 export default function OrderSearch({
   onSearch,
 }: {
-  onSearch: (data: IOrder) => void;
+  onSearch: (data: IPlacedOrder) => void;
 }) {
   const [state, setState] = React.useState({
     type: "order",

@@ -161,7 +161,7 @@ export default function ProductDetail({
                 </div>
               </th>
               <th scope="col" className="px-1.5 pb-1.5 text-center text-sm font-medium text-gray-900 min-w-24">
-                (Exc. Cost)
+                (Inc. Cost)
               </th>
             </tr>
           </thead>

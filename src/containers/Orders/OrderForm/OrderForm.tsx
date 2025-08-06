@@ -5,11 +5,11 @@ import React from "react";
 import { Products } from "@/containers/Products";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
-import { IOrderData } from "@/services/Orders/IOrderData";
-import { IOrdering } from "@/services/Orders/IOrdering";
-import { IOrderline } from "@/services/Orders/IOrderline";
-import { IOrder } from "@/services/Orders/IOrder";
-import { resolveOrdering } from "@/services/Orders/resolveOrdering";
+import { IOrderData } from "@/services/PlacedOrders/IOrderData";
+import { IOrdering } from "@/services/PlacedOrders/IOrdering";
+import { IOrderline } from "@/services/PlacedOrders/IOrderline";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
+import { resolveOrdering } from "@/services/PlacedOrders/resolveOrdering";
 
 import { Preorders } from "../Preorders";
 import { RegularOrders } from "../RegularOrders";
@@ -33,7 +33,7 @@ interface IState {
     sellingAt: number;
   } | undefined;
   summary: {
-    order: IOrder;
+    order: IPlacedOrder;
   } | undefined;
 }
 

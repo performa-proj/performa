@@ -2,15 +2,14 @@
 
 import React from "react";
 import { classnames } from "@/containers/core/classnames";
-import { IOrder } from "@/services/Orders/IOrder";
-import ProgressBar from "./ProgressBar";
+import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
 import Orderlines from "./Orderlines";
 import OrderlineCounterDialog from "./OrderlineCounterDialog";
 
 export default function Fulfillment({
   order,
 }: {
-  order: IOrder;
+  order: IPlacedOrder;
 }) {
   const [state, setState] = React.useState<{
     counts: number[];

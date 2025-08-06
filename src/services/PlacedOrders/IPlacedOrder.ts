@@ -6,10 +6,9 @@ import { IOrderline } from "./IOrderline";
 ** 2 -
 ****************/
 
-export interface IOrder {
+export interface IPlacedOrder {
   _id: string;
   transactionID: number;
-  state: number;
   level: number;
   customer?: {
     id: string;

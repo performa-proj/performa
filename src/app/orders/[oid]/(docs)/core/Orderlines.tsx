@@ -1,4 +1,4 @@
-import { IOrderline } from "@/services/Orders/IOrderline";
+import { IOrderline } from "@/services/PlacedOrders/IOrderline";
 
 export default function Orderlines({
   order

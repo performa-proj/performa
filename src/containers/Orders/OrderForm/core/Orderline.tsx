@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { IOrderline } from "@/services/Orders/IOrderline";
+import { IOrderline } from "@/services/PlacedOrders/IOrderline";
 
 export default function Orderline({
   data,

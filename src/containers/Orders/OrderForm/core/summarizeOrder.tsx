@@ -1,4 +1,4 @@
-import { IOrderline } from "@/services/Orders/IOrderline";
+import { IOrderline } from "@/services/PlacedOrders/IOrderline";
 
 export const summarizeOrder = (orderlines: IOrderline[]) => {
   const { weight, discount, retail, total } = orderlines.reduce((result, each) => {
