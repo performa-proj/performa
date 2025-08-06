@@ -2,14 +2,14 @@
 
 import React from "react";
 
-import { Products } from "@/containers/Products";
-import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
 import { IOrderData } from "@/services/PlacedOrders/IOrderData";
 import { IOrdering } from "@/services/PlacedOrders/IOrdering";
 import { IOrderline } from "@/services/PlacedOrders/IOrderline";
 import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
 import { resolveOrdering } from "@/services/PlacedOrders/resolveOrdering";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
+import { Products } from "@/containers/Products";
 
 import { Preorders } from "../Preorders";
 import { RegularOrders } from "../RegularOrders";
@@ -205,7 +205,7 @@ export default function OrderForm() {
     console.log("Preorder created:", preorder);
   };
 
-  const handlePosting = async (data: {
+  const handlePlacing = async (data: {
     level: number;
     customer: {
       id: string;
@@ -216,11 +216,11 @@ export default function OrderForm() {
       creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
-    process: string;
     pod: boolean;
     weight: number;
     total: number;
   }) => {
+    console.log("Placing order with data:", data);
     const order = await RegularOrders.createOrder(data);
 
     setState({
@@ -239,6 +239,7 @@ export default function OrderForm() {
         order,
       },
     });
+
     setOpen(false);
   };
 
@@ -285,7 +286,7 @@ export default function OrderForm() {
           ordering: state.ordering,
         }}
         onPreordering={handlePreordering}
-        onPosting={handlePosting}
+        onPlacing={handlePlacing}
         onClose={() => setOpen(false)}
       />
 

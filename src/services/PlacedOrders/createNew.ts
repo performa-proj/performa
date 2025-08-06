@@ -10,6 +10,8 @@ export const createNew = async (props: {
     name: string;
     mobile: string;
     creditDays: number;
+    creditLimit: number;
+    creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
   pod: boolean;
@@ -37,20 +39,14 @@ export const createNew = async (props: {
 
   const data = {
     transactionID,
-    state: 1,
     level,
-    ...(customer ? {
-      customer: {
-        id: customer.id,
-        name: customer.name,
-        mobile: customer.mobile,
-      },
-    } : {}),
+    customer: customer ? {
+      id: customer.id,
+      name: customer.name,
+      mobile: customer.mobile,
+    } : undefined,
     orderlines,
-    payment: {
-      pod,
-      dueDate,
-    },
+    pod,
     weight,
     total,
     createdAt: now,

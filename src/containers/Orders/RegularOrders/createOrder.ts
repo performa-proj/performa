@@ -12,12 +12,11 @@ export const createOrder = async (payloads: {
     creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
-  process: string;
   pod: boolean;
   weight: number;
   total: number;
 }): Promise<IPlacedOrder> => {
-  const response = await fetch("/api/orders/ro", {
+  const response = await fetch("/api/orders/placedorders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
