@@ -2,22 +2,22 @@
 
 import React from "react";
 
-import { Products } from "@/containers/Products";
-import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
 import { IOrderline } from "@/services/Orders/IOrderline";
-import { IOrder } from "@/services/Orders/IOrder";
+import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { resolveOrdering } from "@/services/Orders/resolveOrdering";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
+import { Products } from "@/containers/Products";
 
 import { Preorders } from "../Preorders";
-import { RegularOrders } from "../RegularOrders";
-import CustomerSection from "./CustomerSection";
-import ProductsSection from "./ProductsSection";
+import { ProcessOrders } from "../ProcessOrders";
 import EditOrderlineDialog from "./core/EditOrderlineDialog";
 import OrderPostDialog from "./core/OrderPostDialog";
 import OrderSummaryDialog from "./core/OrderSummaryDialog";
+import CustomerSection from "./CustomerSection";
+import ProductsSection from "./ProductsSection";
 
 const MaxLevel = 99;
 
@@ -33,7 +33,7 @@ interface IState {
     sellingAt: number;
   } | undefined;
   summary: {
-    order: IOrder;
+    order: IProcessOrder;
   } | undefined;
 }
 
@@ -205,7 +205,7 @@ export default function OrderForm() {
     console.log("Preorder created:", preorder);
   };
 
-  const handlePosting = async (data: {
+  const handlePlacing = async (data: {
     level: number;
     customer: {
       id: string;
@@ -216,12 +216,12 @@ export default function OrderForm() {
       creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
-    process: string;
     pod: boolean;
     weight: number;
     total: number;
   }) => {
-    const order = await RegularOrders.createOrder(data);
+    console.log("Placing order with data:", data);
+    const order = await ProcessOrders.createOrder(data);
 
     setState({
       orderData: {
@@ -239,6 +239,7 @@ export default function OrderForm() {
         order,
       },
     });
+
     setOpen(false);
   };
 
@@ -285,7 +286,7 @@ export default function OrderForm() {
           ordering: state.ordering,
         }}
         onPreordering={handlePreordering}
-        onPosting={handlePosting}
+        onPlacing={handlePlacing}
         onClose={() => setOpen(false)}
       />
 

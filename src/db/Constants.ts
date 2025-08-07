@@ -1,7 +1,7 @@
 export const COLLECTION_NAME = {
   Identities: "Identities",
-  Orders: "Orders",
   Preorders: "Preorders",
+  ProcessOrders: "ProcessOrders",
   PriceStructures: "PriceStructures",
   Products: "Products",
   ProductItemStructures: "ProductItemStructures",

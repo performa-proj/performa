@@ -15,11 +15,6 @@ const OrderTypes = [
   { label: "PO", value: "preorder" },
 ];
 
-const Processes = [
-  { label: "Storefront", value: "storefront" },
-  { label: "Delivery", value: "delivery" },
-];
-
 export default function OrderPostDialog({
   open,
   data: {
@@ -27,7 +22,7 @@ export default function OrderPostDialog({
     ordering,
   },
   onPreordering,
-  onPosting,
+  onPlacing,
   onClose,
 }: {
   open: boolean;
@@ -53,7 +48,7 @@ export default function OrderPostDialog({
       };
     };
   }) => void;
-  onPosting: (data: {
+  onPlacing: (data: {
     level: number;
     customer: {
       id: string;
@@ -64,7 +59,6 @@ export default function OrderPostDialog({
       creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
-    process: string;
     pod: boolean;
     weight: number;
     total: number;
@@ -73,7 +67,6 @@ export default function OrderPostDialog({
 }) {
   const [state, setState] = React.useState({
     type: "regular",
-    process: "storefront",
     pod: false,
     payment: {
       cash: "0",
@@ -127,7 +120,7 @@ export default function OrderPostDialog({
         lines: orderData.lines,
       });
     } else {
-      onPosting({
+      onPlacing({
         level: ordering.level,
         customer: ordering.customer ? {
           id: ordering.customer.id,
@@ -138,7 +131,6 @@ export default function OrderPostDialog({
           creditSpent: ordering.customer.creditSpent,
         } : undefined,
         orderlines: ordering.orderlines,
-        process: state.process,
         pod: state.pod,
         weight: weight,
         total: total,
@@ -151,7 +143,6 @@ export default function OrderPostDialog({
 
     setState({
       type: "regular",
-      process: "storefront",
       pod: false,
       payment: {
         cash: "0",
@@ -222,137 +213,86 @@ export default function OrderPostDialog({
             </dd>
           </div>
 
-          <div className="py-2 grid grid-cols-3 gap-4">
-            <dt className="text-sm/6 font-medium text-gray-600">Process</dt>
-            <dd className="col-span-2">
-              <div className="flex items-center space-x-6 space-y-0">
-                {Processes.map((each) => (
-                  <div
-                    key={each.value}
-                    className="flex items-center"
-                    onClick={() => {
-                      setState({
-                        ...state,
-                        process: each.value,
-                      });
-                    }}
+          <div className="py-2">
+            <p className="text-sm font-semibold text-gray-900 py-2">Payment</p>
+
+            {!state.pod && (
+              <div className="py-1.5">
+                <div className="py-1.5 grid grid-cols-3 gap-4">
+                  <dt
+                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
                   >
+                    Cash
+                  </dt>
+                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
                     <input
-                      id={each.value}
-                      name="handling"
-                      type="radio"
-                      className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-blue-600 checked:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
-                      checked={each.value === state.process}
-                      value={each.value}
-                      onChange={(e) => {
-                        const value = e.currentTarget.value;
-                        if (value === "storefront") {
-                          setState({
-                            ...state,
-                            pod: false,
-                            process: value,
-                          });
-                        } else {
-                          setState({
-                            ...state,
-                            process: value,
-                          });
-                        }
-                      }}
+                      type="text"
+                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                      value={state.payment.cash}
+                      onChange={(e) => handleCashChanged(e.currentTarget.value)}
                     />
-                    <label className="ml-1.5 block text-sm/6 font-medium text-gray-900">
-                      {each.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              {state.process === "delivery" && (
-                <div className="flex gap-3 pt-1.5">
-                  <div className="flex h-6 shrink-0 items-center">
-                    <div className="group grid size-4 grid-cols-1">
-                      <input
-                        id="pod"
-                        name="pod"
-                        type="checkbox"
-                        aria-describedby="pay-on-delivery"
-                        checked={state.pod}
-                        className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                        onChange={() => {
-                          setState({
-                            ...state,
-                            pod: !state.pod,
-                          });
-                        }}
-                      />
-                      <svg
-                        fill="none"
-                        viewBox="0 0 14 14"
-                        className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
-                      >
-                        <path
-                          d="M3 8L6 11L11 3.5"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="opacity-0 group-has-[:checked]:opacity-100"
-                        />
-                        <path
-                          d="M3 7H11"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <p className="text-sm/6 font-normal text-gray-900">
-                    Pay on Delivery (POD)
-                  </p>
+                  </dd>
                 </div>
-              )}
 
-            </dd>
-          </div>
-
-          {!state.pod && (
-            <div className="py-2">
-              <p className="text-sm my-1 font-semibold text-gray-900 py-2">Payment</p>
-
-              <div className="py-1.5 grid grid-cols-3 gap-4">
-                <dt
-                  className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
-                >
-                  Cash
-                </dt>
-                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                  <input
-                    type="text"
-                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                    value={state.payment.cash}
-                    onChange={(e) => handleCashChanged(e.currentTarget.value)}
-                  />
-                </dd>
+                <div className="py-1.5 grid grid-cols-3 gap-4">
+                  <dt
+                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
+                  >
+                    Transfer
+                  </dt>
+                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+                    <input
+                      type="text"
+                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                      value={state.payment.transfer}
+                      onChange={(e) => handleTransferChanged(e.currentTarget.value)}
+                    />
+                  </dd>
+                </div>
               </div>
+            )}
 
-              <div className="py-1.5 grid grid-cols-3 gap-4">
-                <dt
-                  className="cursor-pointer pl-1.5 text-sm/6 font-medium text-gray-600"
+            <div className="pl-2 flex items-center space-x-2">
+              <div className="group size-4 grid grid-cols-1">
+                <input
+                  id="pod"
+                  name="pod"
+                  type="checkbox"
+                  className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                  checked={state.pod}
+                  onChange={(e) => {
+                    setState({
+                      ...state,
+                      pod: e.currentTarget.checked,
+                    });
+                  }}
+                />
+                <svg
+                  fill="none"
+                  viewBox="0 0 14 14"
+                  className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
                 >
-                  Transfer
-                </dt>
-                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                  <input
-                    type="text"
-                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                    value={state.payment.transfer}
-                    onChange={(e) => handleTransferChanged(e.currentTarget.value)}
+                  <path
+                    d="M3 8L6 11L11 3.5"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="opacity-0 group-has-[:checked]:opacity-100"
                   />
-                </dd>
+                  <path
+                    d="M3 7H11"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                  />
+                </svg>
               </div>
+              <p className="text-sm/6 font-medium text-gray-900">
+                Pay on Delivery (PoD)
+              </p>
             </div>
-          )}
+          </div>
         </dl>
       </div >
     </DialogBase >

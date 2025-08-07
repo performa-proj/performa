@@ -1,19 +1,19 @@
 import { ObjectId } from "mongodb";
 import { COLLECTION_NAME, Data } from "@/db";
-import { IOrder } from "./IOrder";
+import { IProcessOrder } from "./IProcessOrder";
 
 export const findByID = async ({
   _id,
 }: {
   _id: string;
-}): Promise<IOrder | null> => {
+}): Promise<IProcessOrder | null> => {
   const db = await Data.connectDB();
 
   const filter = {
     _id: new ObjectId(_id),
   };
 
-  const result = await db.collection(COLLECTION_NAME.Orders).findOne<IOrder>(filter);
+  const result = await db.collection(COLLECTION_NAME.ProcessOrders).findOne<IProcessOrder>(filter);
 
   if (result) {
     return {

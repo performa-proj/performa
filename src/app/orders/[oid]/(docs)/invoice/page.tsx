@@ -1,6 +1,6 @@
 import React from "react";
 import QRCode from "react-qr-code";
-import { Orders } from "@/services/Orders";
+import { ProcessOrders } from "@/services/Orders/ProcessOrders";
 import Orderlines from "../core/Orderlines";
 import Topline from "../core/Topline";
 
@@ -10,7 +10,7 @@ export default async function Page({
   params: Promise<{ oid: string }>;
 }) {
   const { oid } = await params;
-  const order = await Orders.findByID({ _id: oid });
+  const order = await ProcessOrders.findByID({ _id: oid });
 
   if (order) {
     const {

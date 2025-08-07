@@ -30,7 +30,7 @@ export default function Page() {
     structuresMap: {},
   });
   const [isLoading, setLoading] = React.useState(false);
-  const [selected, setSelected] = React.useState<"list" | "table">("table");
+  const [selected, setSelected] = React.useState<"list" | "table">("list");
   const [editProduct, setEditProduct] = React.useState<{
     index: number,
     data: IProduct | undefined;
@@ -255,7 +255,7 @@ export default function Page() {
               <div className="flex gap-x-1.5">
                 <button
                   type="button"
-                  className={classnames(selected === "list" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 text-gray-600",
+                  className={classnames(selected === "list" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 hover:ring-gray-600 text-gray-600",
                     "cursor-pointer rounded p-1 ring-1")}
                   onClick={() => setSelected("list")}
                 >
@@ -263,7 +263,7 @@ export default function Page() {
                 </button>
                 <button
                   type="button"
-                  className={classnames(selected === "table" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 text-gray-600",
+                  className={classnames(selected === "table" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 hover:ring-gray-600 text-gray-600",
                     "cursor-pointer rounded p-1 ring-1")}
                   onClick={() => setSelected("table")}
                 >

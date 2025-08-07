@@ -1,7 +1,7 @@
 import { COLLECTION_NAME, Data } from "@/db";
-import { IOrder } from "./IOrder";
-import { IOrderline } from "./IOrderline";
-import { Sessions } from "../Sessions";
+import { Sessions } from "../../Sessions";
+import { IOrderline } from "../IOrderline";
+import { IProcessOrder } from "./IProcessOrder";
 
 export const createNew = async (props: {
   level: number;
@@ -10,12 +10,14 @@ export const createNew = async (props: {
     name: string;
     mobile: string;
     creditDays: number;
+    creditLimit: number;
+    creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
   pod: boolean;
   weight: number;
   total: number;
-}): Promise<IOrder> => {
+}): Promise<IProcessOrder> => {
   const {
     level,
     customer,
@@ -37,27 +39,21 @@ export const createNew = async (props: {
 
   const data = {
     transactionID,
-    state: 1,
     level,
-    ...(customer ? {
-      customer: {
-        id: customer.id,
-        name: customer.name,
-        mobile: customer.mobile,
-      },
-    } : {}),
+    customer: customer ? {
+      id: customer.id,
+      name: customer.name,
+      mobile: customer.mobile,
+    } : undefined,
     orderlines,
-    payment: {
-      pod,
-      dueDate,
-    },
+    pod,
     weight,
     total,
     createdAt: now,
     updatedAt: now,
   };
 
-  const result = await db.collection(COLLECTION_NAME.Orders).insertOne(data);
+  const result = await db.collection(COLLECTION_NAME.ProcessOrders).insertOne(data);
   await Sessions.commitTransaction(sessionID);
 
   return {

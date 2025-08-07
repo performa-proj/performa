@@ -1,18 +1,18 @@
 import { COLLECTION_NAME, Data } from "@/db";
-import { IOrder } from "./IOrder";
+import { IProcessOrder } from "./IProcessOrder";
 
 export const findByTransactionID = async ({
   transactionID,
 }: {
   transactionID: number;
-}): Promise<IOrder | null> => {
+}): Promise<IProcessOrder | null> => {
   const db = await Data.connectDB();
 
   const filter = {
     transactionID,
   };
 
-  const result = await db.collection(COLLECTION_NAME.Orders).findOne<IOrder>(filter);
+  const result = await db.collection(COLLECTION_NAME.ProcessOrders).findOne<IProcessOrder>(filter);
 
   if (result) {
     return result;

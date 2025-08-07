@@ -1,26 +1,16 @@
-import { IOrderline } from "./IOrderline";
+import { IOrderline } from "../IOrderline";
 
-/***************
-** -- States --
-** 1 - placed
-** 2 -
-****************/
-
-export interface IOrder {
+export interface IProcessOrder {
   _id: string;
   transactionID: number;
-  state: number;
   level: number;
-  customer?: {
+  customer: {
     id: string;
     name: string;
     mobile: string;
   } | undefined;
   orderlines: IOrderline[];
-  payment: {
-    pod: boolean;
-    dueDate: number;
-  };
+  pod: boolean;
   weight: number;
   total: number;
   createdAt: Date;
