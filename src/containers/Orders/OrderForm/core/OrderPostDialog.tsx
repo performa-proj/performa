@@ -4,9 +4,9 @@ import React from "react";
 
 import DialogBase from "@/containers/core/DialogBase";
 import { resolveNumber } from "@/containers/core/resolveNumber";
-import { IOrderData } from "@/services/PlacedOrders/IOrderData";
-import { IOrdering } from "@/services/PlacedOrders/IOrdering";
-import { IOrderline } from "@/services/PlacedOrders/IOrderline";
+import { IOrderData } from "@/services/Orders/IOrderData";
+import { IOrdering } from "@/services/Orders/IOrdering";
+import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { summarizeOrder } from "./summarizeOrder";
 

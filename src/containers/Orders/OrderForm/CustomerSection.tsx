@@ -4,7 +4,7 @@ import React from "react";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
-import { IOrderData } from "@/services/PlacedOrders/IOrderData";
+import { IOrderData } from "@/services/Orders/IOrderData";
 import CustomerSearch from "@/containers/Customers/CustomerSearch";
 
 export default function CustomerSection({

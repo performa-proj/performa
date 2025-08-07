@@ -3,8 +3,8 @@
 import React from "react";
 
 import ProductSearch from "@/containers/Products/ProductSearch";
-import { IOrderData } from "@/services/PlacedOrders/IOrderData";
-import { IOrdering } from "@/services/PlacedOrders/IOrdering";
+import { IOrderData } from "@/services/Orders/IOrderData";
+import { IOrdering } from "@/services/Orders/IOrdering";
 import Orderlines from "./core/Orderlines";
 
 export default function ProductsSection({

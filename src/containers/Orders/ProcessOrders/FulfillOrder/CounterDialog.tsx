@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import DialogBase from "@/containers/core/DialogBase";
 
-export default function OrderlineCounterDialog({
+export default function CounterDialog({
   open,
   data,
   onClose,

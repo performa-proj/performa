@@ -1,7 +1,7 @@
 import { COLLECTION_NAME, Data } from "@/db";
-import { IPlacedOrder } from "./IPlacedOrder";
-import { IOrderline } from "./IOrderline";
-import { Sessions } from "../Sessions";
+import { Sessions } from "../../Sessions";
+import { IOrderline } from "../IOrderline";
+import { IProcessOrder } from "./IProcessOrder";
 
 export const createNew = async (props: {
   level: number;
@@ -17,7 +17,7 @@ export const createNew = async (props: {
   pod: boolean;
   weight: number;
   total: number;
-}): Promise<IPlacedOrder> => {
+}): Promise<IProcessOrder> => {
   const {
     level,
     customer,
@@ -53,7 +53,7 @@ export const createNew = async (props: {
     updatedAt: now,
   };
 
-  const result = await db.collection(COLLECTION_NAME.PlacedOrders).insertOne(data);
+  const result = await db.collection(COLLECTION_NAME.ProcessOrders).insertOne(data);
   await Sessions.commitTransaction(sessionID);
 
   return {

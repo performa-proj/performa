@@ -1,6 +1,6 @@
-import { IOrderline } from "./IOrderline";
+import { IOrderline } from "../IOrderline";
 
-export interface IPlacedOrder {
+export interface IProcessOrder {
   _id: string;
   transactionID: number;
   level: number;

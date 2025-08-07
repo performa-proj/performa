@@ -3,21 +3,21 @@
 import React from "react";
 
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
-import { IOrderData } from "@/services/PlacedOrders/IOrderData";
-import { IOrdering } from "@/services/PlacedOrders/IOrdering";
-import { IOrderline } from "@/services/PlacedOrders/IOrderline";
-import { IPlacedOrder } from "@/services/PlacedOrders/IPlacedOrder";
-import { resolveOrdering } from "@/services/PlacedOrders/resolveOrdering";
+import { IOrderData } from "@/services/Orders/IOrderData";
+import { IOrdering } from "@/services/Orders/IOrdering";
+import { IOrderline } from "@/services/Orders/IOrderline";
+import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
+import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { Products } from "@/containers/Products";
 
 import { Preorders } from "../Preorders";
-import { RegularOrders } from "../RegularOrders";
-import CustomerSection from "./CustomerSection";
-import ProductsSection from "./ProductsSection";
+import { ProcessOrders } from "../ProcessOrders";
 import EditOrderlineDialog from "./core/EditOrderlineDialog";
 import OrderPostDialog from "./core/OrderPostDialog";
 import OrderSummaryDialog from "./core/OrderSummaryDialog";
+import CustomerSection from "./CustomerSection";
+import ProductsSection from "./ProductsSection";
 
 const MaxLevel = 99;
 
@@ -33,7 +33,7 @@ interface IState {
     sellingAt: number;
   } | undefined;
   summary: {
-    order: IPlacedOrder;
+    order: IProcessOrder;
   } | undefined;
 }
 
@@ -221,7 +221,7 @@ export default function OrderForm() {
     total: number;
   }) => {
     console.log("Placing order with data:", data);
-    const order = await RegularOrders.createOrder(data);
+    const order = await ProcessOrders.createOrder(data);
 
     setState({
       orderData: {
