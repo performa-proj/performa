@@ -31,6 +31,7 @@ export default function OrderPostDialog({
     ordering: IOrdering;
   };
   onPreordering: (data: {
+    level: number;
     customer: {
       id: string;
       name: string;
@@ -39,7 +40,6 @@ export default function OrderPostDialog({
       creditLimit: number;
       creditSpent: number;
     };
-    level: number;
     lines: {
       [sku: string]: {
         quantity: number;
@@ -59,7 +59,9 @@ export default function OrderPostDialog({
       creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
-    pod: boolean;
+    payment: {
+      pod: boolean;
+    };
     weight: number;
     total: number;
   }) => void;
@@ -131,7 +133,9 @@ export default function OrderPostDialog({
           creditSpent: ordering.customer.creditSpent,
         } : undefined,
         orderlines: ordering.orderlines,
-        pod: state.pod,
+        payment: {
+          pod: state.pod,
+        },
         weight: weight,
         total: total,
       });

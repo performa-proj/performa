@@ -296,8 +296,6 @@ export default function Page() {
               (<ProductsTable
                 products={state.products}
                 structuresMap={state.structuresMap}
-                onEditProductOpened={handleEditProductOpened}
-                onNewProductItemOpened={handleNewProductItemOpened}
                 onEditProductItemOpened={handleEditProductItemOpened}
                 onDetail={handleDetail}
               />)

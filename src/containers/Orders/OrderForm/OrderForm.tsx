@@ -216,11 +216,12 @@ export default function OrderForm() {
       creditSpent: number;
     } | undefined;
     orderlines: IOrderline[];
-    pod: boolean;
+    payment: {
+      pod: boolean;
+    };
     weight: number;
     total: number;
   }) => {
-    console.log("Placing order with data:", data);
     const order = await ProcessOrders.createOrder(data);
 
     setState({
@@ -271,6 +272,7 @@ export default function OrderForm() {
           </div>
 
         </div>
+
         <ProductsSection
           orderData={state.orderData}
           ordering={state.ordering}

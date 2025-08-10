@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { IOrderline } from "@/services/Orders/IOrderline";
 
 import Orderline from "./Orderline";

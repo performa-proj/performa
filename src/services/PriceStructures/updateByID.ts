@@ -1,5 +1,5 @@
-import { COLLECTION_NAME, Data } from "@/db";
 import { ObjectId } from "mongodb";
+import { COLLECTION_NAME, Data } from "@/db";
 
 export const updateByID = async ({
   _id,

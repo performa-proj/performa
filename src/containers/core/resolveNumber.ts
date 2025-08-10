@@ -20,6 +20,10 @@ export const resolveNumber = (value: string, nValue: string) => {
       return nValue.slice(0, -1);
     }
 
+    if (nValue.indexOf(".") >= 0) {
+      return nValue;
+    }
+
     return numb.toString();
   }
 

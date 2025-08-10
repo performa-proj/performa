@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
 import { NoDataMessage } from "@/containers/core/NoDataMessage";
@@ -8,15 +9,15 @@ import { NoDataMessage } from "@/containers/core/NoDataMessage";
 export default function ProductsTable({
   products,
   structuresMap,
-  onEditProductOpened,
-  onNewProductItemOpened,
+  // onEditProductOpened,
+  // onNewProductItemOpened,
   onEditProductItemOpened,
   onDetail,
 }: {
   products: IProduct[];
   structuresMap: { [id: string]: IPriceStructure; };
-  onEditProductOpened: (productID: string) => void;
-  onNewProductItemOpened: (productID: string) => void;
+  // onEditProductOpened: (productID: string) => void;
+  // onNewProductItemOpened: (productID: string) => void;
   onEditProductItemOpened: (productID: string, sku: string) => void;
   onDetail: (productID: string) => void;
 }) {
@@ -42,13 +43,25 @@ export default function ProductsTable({
         <tbody className="divide-y divide-gray-200">
           {products.map((product) => (
             <React.Fragment key={product._id}>
-              <tr key={product._id} className="bg-gray-50 cursor-pointer" onClick={() => onDetail(product._id)}>
+              <tr key={product._id} className="bg-gray-50">
                 <th
                   scope="row"
                   colSpan={8}
                   className="px-2 py-2 bg-gray-100 text-left text-sm font-semibold text-gray-900"
                 >
-                  {product.ref} - {product.title}
+                  <div className="flex items-center">
+                    <button className="px-2 -ml-2 cursor-pointer"
+                      onClick={() => console.log("12")}
+                    >
+                      <ChevronUpIcon className="size-3" />
+                    </button>
+                    <div
+                      className="flex-auto cursor-pointer"
+                      onClick={() => onDetail(product._id)}
+                    >
+                      {product.ref} - {product.title}
+                    </div>
+                  </div>
                 </th>
               </tr>
               {product.items.map((item) => (

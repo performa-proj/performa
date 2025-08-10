@@ -14,7 +14,9 @@ export const createNew = async (props: {
     creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
-  pod: boolean;
+  payment: {
+    pod: boolean;
+  };
   weight: number;
   total: number;
 }): Promise<IProcessOrder> => {
@@ -22,7 +24,7 @@ export const createNew = async (props: {
     level,
     customer,
     orderlines,
-    pod,
+    payment,
     weight,
     total,
   } = props;
@@ -46,7 +48,7 @@ export const createNew = async (props: {
       mobile: customer.mobile,
     } : undefined,
     orderlines,
-    pod,
+    payment,
     weight,
     total,
     createdAt: now,
