@@ -21,7 +21,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased h-full w-full`}
       >
-        <div className="bg-white h-full">
+        <div className="bg-white w-full h-full">
           {children}
         </div>
       </body>

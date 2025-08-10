@@ -12,7 +12,9 @@ export const createOrder = async (payloads: {
     creditSpent: number;
   } | undefined;
   orderlines: IOrderline[];
-  pod: boolean;
+  payment: {
+    pod: boolean;
+  };
   weight: number;
   total: number;
 }): Promise<IProcessOrder> => {

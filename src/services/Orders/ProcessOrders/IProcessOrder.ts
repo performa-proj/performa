@@ -10,7 +10,28 @@ export interface IProcessOrder {
     mobile: string;
   } | undefined;
   orderlines: IOrderline[];
-  pod: boolean;
+  fulfillment?: {
+    completed: boolean;
+    vehicle?: {
+      plate?: string;
+      weight: {
+        initial: number;
+        loaded: number;
+      };
+    };
+    orderlines: {
+      [sku: string]: {
+        count: number;
+      };
+    };
+  };
+  payment: {
+    pod: boolean;
+    cash?: number;
+    transfer?: {
+      amount: number;
+    };
+  };
   weight: number;
   total: number;
   createdAt: Date;

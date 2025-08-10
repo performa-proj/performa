@@ -2,70 +2,79 @@
 
 import React from "react";
 import DialogBase from "@/containers/core/DialogBase";
+import { resolveNumber } from "@/containers/core/resolveNumber";
 
 export default function CounterDialog({
   open,
-  data,
+  predata,
   onClose,
+  onCompleted,
 }: {
   open: boolean;
-  data: {
+  predata: {
     index: number;
     sku: string;
     label: string;
     quantity: number;
     count: number;
   };
+  onCompleted: () => void;
   onClose: (count: number) => void;
 }) {
-  const [state, setState] = React.useState(data.count);
+  const [state, setState] = React.useState(predata.count.toString());
+
+  const handleCountChanged = (value: string) => {
+    let nState = resolveNumber(state, value);
+
+    if (Number(nState) > predata.quantity) {
+      nState = predata.quantity.toString();
+    }
+
+    setState(nState);
+  };
+
+  const handleCompleted = () => {
+    onCompleted();
+    setState(predata.quantity.toString());
+  };
 
   const handleClose = () => {
-    onClose(state);
+    onClose(Number(state) || 0);
   };
 
   return (
     <DialogBase
-      title="Counter"
+      title="Orderline Counter"
       open={open}
+      onClose={handleClose}
       closeButton={{
         title: "Close",
       }}
-      onClose={handleClose}
+      submitButton={{
+        title: "Mark Completed",
+        onSubmit: handleCompleted,
+      }}
     >
-      <div className="px-2">
-        <div className="py-2">
-          <label className="block text-sm/6 font-medium text-gray-900">Product Item</label>
-          <p className="block mt-2 text-sm/6 font-semibold text-gray-900">{data.sku} - {data.label}</p>
-        </div>
+      <div className="py-1.5">
+        <label className="block text-sm/6 font-medium text-gray-900">Product Item</label>
+        <p className="block mt-2 text-sm/6 font-semibold text-gray-900">{predata.sku} - {predata.label}</p>
+      </div>
 
-        <div className="grid grid-cols-2 gap-px bg-gray-900/5 my-5">
-          <div className="flex flex-wrap bg-white gap-y-2 px-4">
-            <dt className="text-sm/6 font-medium text-gray-500">Quantity</dt>
-            <dd className="w-full flex-none text-3xl/10 font-medium tracking-tight text-gray-900">{data.quantity}</dd>
-          </div>
-          <div className="flex flex-wrap bg-white gap-y-2 px-4">
-            <dt className="text-sm/6 font-medium text-gray-500">Count</dt>
-            <dd className="w-full flex-none text-3xl/10 font-medium tracking-tight text-green-700">{state}</dd>
-            
-          </div>
+      <div className="mt-5 grid grid-cols-2">
+        <div>
+          <label className="block text-sm/6 font-medium text-gray-900">Quantity</label>
+          <p className="block mt-2 text-lg font-semibold text-gray-900">{predata.quantity}</p>
         </div>
-
-        <div className="flex justify-center">
-          <span className="isolate inline-flex rounded-md">
-            <button
-              type="button"
-              className="relative inline-flex items-center rounded-l-md bg-white min-w-0 px-5 py-2 text-xl font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              -
-            </button>
-            <button
-              type="button"
-              className="relative -ml-px inline-flex items-center rounded-r-md bg-white min-w-0 px-5 py-2 text-xl font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-            >
-              +
-            </button>
-          </span>
+        <div>
+          <label className="block text-sm/6 font-medium text-gray-900">Count</label>
+          <div className="mt-2">
+            <input
+              type="string"
+              value={state}
+              onChange={(e) => handleCountChanged(e.currentTarget.value)}
+              className="block min-w-0 max-w-24 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6"
+            />
+          </div>
         </div>
       </div>
     </DialogBase>
