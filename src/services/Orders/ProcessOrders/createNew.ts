@@ -13,20 +13,21 @@ export const createNew = async (props: {
     creditLimit: number;
     creditSpent: number;
   } | undefined;
-  orderlines: IOrderline[];
+  ordering: {
+    lines: IOrderline[];
+    weight: number;
+    total: number;
+  };
   payment: {
     pod: boolean;
+    payable: number;
   };
-  weight: number;
-  total: number;
 }): Promise<IProcessOrder> => {
   const {
     level,
     customer,
-    orderlines,
+    ordering,
     payment,
-    weight,
-    total,
   } = props;
 
   const db = await Data.connectDB();
@@ -47,10 +48,8 @@ export const createNew = async (props: {
       name: customer.name,
       mobile: customer.mobile,
     } : undefined,
-    orderlines,
+    ordering,
     payment,
-    weight,
-    total,
     createdAt: now,
     updatedAt: now,
   };

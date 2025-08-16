@@ -3,13 +3,13 @@
 import { IOrderline } from "@/services/Orders/IOrderline";
 
 import Orderline from "./Orderline";
-import { summarizeOrder } from "./summarizeOrder";
+import { summarizeOrderlines } from "./summarizeOrderlines";
 
 const NoDataDisplay = () => (
   <tr>
     <td colSpan={4}>
-      <div className="flex justify-center items-center min-h-20">
-        <p className="text-sm font-semibold text-gray-900 leading-6">
+      <div className="flex justify-center items-center h-32">
+        <p className="text-sm/6 font-semibold text-gray-900">
           No Data
         </p>
       </div>
@@ -24,7 +24,7 @@ export default function Orderlines({
   orderlines: IOrderline[];
   onEditing: (sku: string) => void;
 }) {
-  const { weight, discount, retail, total } = summarizeOrder(orderlines);
+  const { weight, discount, retail, total } = summarizeOrderlines(orderlines);
   const isDiscount = discount > 0;
 
   return (
@@ -87,7 +87,7 @@ export default function Orderlines({
                   scope="row"
                   className="px-2 py-1.5 text-right"
                 >
-                  <div className="text-sm font-medium text-gray-600">{discount.toLocaleString()}</div>
+                  <div className="text-sm font-medium text-gray-600">({discount.toLocaleString()})</div>
                 </th>
               </tr>
             </>

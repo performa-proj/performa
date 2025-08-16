@@ -11,12 +11,15 @@ export const createOrder = async (payloads: {
     creditLimit: number;
     creditSpent: number;
   } | undefined;
-  orderlines: IOrderline[];
+  ordering: {
+    lines: IOrderline[];
+    weight: number;
+    total: number;
+  };
   payment: {
+    payable: number;
     pod: boolean;
   };
-  weight: number;
-  total: number;
 }): Promise<IProcessOrder> => {
   const response = await fetch("/api/orders/process", {
     method: "POST",

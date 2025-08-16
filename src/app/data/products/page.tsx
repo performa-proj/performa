@@ -2,23 +2,23 @@
 
 import React from "react";
 
-import NewProductButton from "@/containers/Products/NewProductButton";
 import { ListBulletIcon } from "@heroicons/react/24/solid";
+import { TableCellsIcon } from "@heroicons/react/24/outline";
 
 import { IProduct } from "@/services/Products/IProduct";
 import { IPriceStructure } from "@/services/PriceStructures/IPriceStructure";
+import { IProductItem } from "@/services/Products/Items/IProductItem";
 import { ReloadButton } from "@/containers/core/ReloadButton";
 import { LoadingMessage } from "@/containers/core/LoadingMessage";
 import { Products } from "@/containers/Products";
 import { PriceStructures } from "@/containers/PriceStructures";
-import { IProductItem } from "@/services/Products/Items/IProductItem";
 import ProductDetail from "@/containers/Products/ProductDetail";
 import ProductsList from "@/containers/Products/ProductsList";
 import ProductsTable from "@/containers/Products/ProductsTable";
 import EditProductDialog from "@/containers/Products/EditProductDialog";
+import NewProductButton from "@/containers/Products/NewProductButton";
 import NewProductItemDialog from "@/containers/Products/NewProductItemDialog";
 import EditProductItemDialog from "@/containers/Products/EditProductItemDialog";
-import { TableCellsIcon } from "@heroicons/react/24/outline";
 import { classnames } from "@/containers/core/classnames";
 
 export default function Page() {
@@ -255,7 +255,7 @@ export default function Page() {
               <div className="flex gap-x-1.5">
                 <button
                   type="button"
-                  className={classnames(selected === "list" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 hover:ring-gray-600 text-gray-600",
+                  className={classnames(selected === "list" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-400 hover:ring-gray-600 text-gray-400",
                     "cursor-pointer rounded p-1 ring-1")}
                   onClick={() => setSelected("list")}
                 >
@@ -263,7 +263,7 @@ export default function Page() {
                 </button>
                 <button
                   type="button"
-                  className={classnames(selected === "table" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-300 hover:ring-gray-600 text-gray-600",
+                  className={classnames(selected === "table" ? "bg-white ring-blue-600 text-blue-600" : "bg-white ring-gray-400 hover:ring-gray-600 text-gray-400",
                     "cursor-pointer rounded p-1 ring-1")}
                   onClick={() => setSelected("table")}
                 >

@@ -13,5 +13,23 @@ export const resolveReturning = (data: {
     };
   };
 }): IReturnline[] => {
-  return [];
+  const returning = Object.values(data.lines).map((each) => {
+    const maxIndex = each.line.priceLevels.length - 1;
+    const index = data.level > maxIndex ? maxIndex : data.level;
+    const returningAt = each.line.priceLevels[index];
+
+    const returnline: IReturnline = {
+      quantity: each.quantity,
+      productID: each.line.productID,
+      sku: each.line.sku,
+      label: each.line.label,
+      weight: each.line.weight,
+      structureID: each.line.structureID,
+      returningAt,
+    };
+
+    return returnline;
+  });
+
+  return returning;
 };

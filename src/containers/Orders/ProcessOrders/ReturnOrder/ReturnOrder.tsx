@@ -22,7 +22,7 @@ export default function ReturnOrder({
   };
 
   return (
-    <div className="bg-white w-full h-full py-2">
+    <div className="flex flex-col bg-white w-full h-full py-2">
       <div className="flex px-4 py-1.5 border-b border-gray-200">
         <button
           className="cursor-pointer text-gray-600 hover:text-gray-900"
@@ -35,17 +35,19 @@ export default function ReturnOrder({
         </p>
       </div>
 
-      <div className="flex px-4 py-1.5">
-        <p className="text-base font-normal text-gray-900">
-          Customer:
-          <span className="font-semibold px-1.5">{order.customer?.name || "[Walk-In]"}</span>
-        </p>
-      </div>
+      <div className="flex flex-col grow py-1.5">
+        <div className="flex px-4 py-1.5">
+          <p className="text-base font-normal text-gray-900">
+            Customer:
+            <span className="font-semibold px-1.5">{order.customer?.name || "[Walk-In]"}</span>
+          </p>
+        </div>
 
-      <div className="flex px-4">
-        <ReturnOrderSection
-          order={order}
-        />
+        <div className="flex grow px-4">
+          <ReturnOrderSection
+            order={order}
+          />
+        </div>
       </div>
     </div>
   );

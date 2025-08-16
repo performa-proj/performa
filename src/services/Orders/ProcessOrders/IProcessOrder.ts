@@ -1,4 +1,5 @@
 import { IOrderline } from "../IOrderline";
+import { IReturnline } from "../IReturnline";
 
 export interface IProcessOrder {
   _id: string;
@@ -9,8 +10,17 @@ export interface IProcessOrder {
     name: string;
     mobile: string;
   } | undefined;
-  orderlines: IOrderline[];
-  fulfillment?: {
+  ordering: {
+    lines: IOrderline[];
+    weight: number;
+    total: number;
+  };
+  returning?: {
+    lines: IReturnline[];
+    weight: number;
+    total: number;
+  };
+  fulfilling?: {
     completed: boolean;
     vehicle?: {
       plate?: string;
@@ -26,14 +36,13 @@ export interface IProcessOrder {
     };
   };
   payment: {
+    payable: number;
     pod: boolean;
     cash?: number;
     transfer?: {
       amount: number;
     };
   };
-  weight: number;
-  total: number;
   createdAt: Date;
   updatedAt: Date;
 }

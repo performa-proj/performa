@@ -205,7 +205,7 @@ export default function OrderForm() {
     console.log("Preorder created:", preorder);
   };
 
-  const handlePlacing = async (data: {
+  const handleOrdering = async (data: {
     level: number;
     customer: {
       id: string;
@@ -215,12 +215,15 @@ export default function OrderForm() {
       creditLimit: number;
       creditSpent: number;
     } | undefined;
-    orderlines: IOrderline[];
+    ordering: {
+      lines: IOrderline[];
+      weight: number;
+      total: number;
+    };
     payment: {
+      payable: number;
       pod: boolean;
     };
-    weight: number;
-    total: number;
   }) => {
     const order = await ProcessOrders.createOrder(data);
 
@@ -260,7 +263,6 @@ export default function OrderForm() {
             onCustomer={handleCustomer}
             onRemove={handleCustomerRemoved}
           />
-
           <div className="pl-2 ml-2 border-l border-gray-200">
             <button
               type="button"
@@ -270,7 +272,6 @@ export default function OrderForm() {
               Post
             </button>
           </div>
-
         </div>
 
         <ProductsSection
@@ -288,7 +289,7 @@ export default function OrderForm() {
           ordering: state.ordering,
         }}
         onPreordering={handlePreordering}
-        onPlacing={handlePlacing}
+        onOrdering={handleOrdering}
         onClose={() => setOpen(false)}
       />
 

@@ -1,6 +1,6 @@
 import { IOrderline } from "@/services/Orders/IOrderline";
 
-export const summarizeOrder = (orderlines: IOrderline[]) => {
+export const summarizeOrderlines = (orderlines: IOrderline[]) => {
   const { weight, discount, retail, total } = orderlines.reduce((result, each) => {
     result.weight += each.quantity * each.weight;
     result.discount += each.quantity * (each.retailPrice - each.sellingAt);

@@ -8,12 +8,12 @@ import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
 import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
-import { summarizeOrder } from "./summarizeOrder";
+import { summarizeOrderlines } from "./summarizeOrderlines";
 
-const OrderTypes = [
-  { label: "RO", value: "regular" },
-  { label: "PO", value: "preorder" },
-];
+const OrderTypes = {
+  RO: { key: "RO", label: "Regular", value: "regular" },
+  PO: { key: "PO", label: "Preorder", value: "preorder" },
+};
 
 export default function OrderPostDialog({
   open,
@@ -22,7 +22,7 @@ export default function OrderPostDialog({
     ordering,
   },
   onPreordering,
-  onPlacing,
+  onOrdering,
   onClose,
 }: {
   open: boolean;
@@ -48,7 +48,7 @@ export default function OrderPostDialog({
       };
     };
   }) => void;
-  onPlacing: (data: {
+  onOrdering: (data: {
     level: number;
     customer: {
       id: string;
@@ -58,26 +58,31 @@ export default function OrderPostDialog({
       creditLimit: number;
       creditSpent: number;
     } | undefined;
-    orderlines: IOrderline[];
+    ordering: {
+      lines: IOrderline[];
+      weight: number;
+      total: number;
+    };
     payment: {
+      payable: number;
       pod: boolean;
     };
-    weight: number;
-    total: number;
   }) => void;
   onClose: () => void;
 }) {
   const [state, setState] = React.useState({
     type: "regular",
-    pod: false,
     payment: {
+      payable: 0,
+      pod: false,
       cash: "0",
       transfer: "0",
       acc: "0",
     },
   });
   const { customer, orderlines } = ordering;
-  const { weight, total } = summarizeOrder(orderlines);
+  const { weight, total } = summarizeOrderlines(orderlines);
+  const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
 
   const handleCashChanged = (value: string) => {
     setState({
@@ -122,7 +127,7 @@ export default function OrderPostDialog({
         lines: orderData.lines,
       });
     } else {
-      onPlacing({
+      onOrdering({
         level: ordering.level,
         customer: ordering.customer ? {
           id: ordering.customer.id,
@@ -132,12 +137,15 @@ export default function OrderPostDialog({
           creditLimit: ordering.customer.creditLimit,
           creditSpent: ordering.customer.creditSpent,
         } : undefined,
-        orderlines: ordering.orderlines,
-        payment: {
-          pod: state.pod,
+        ordering: {
+          lines: ordering.orderlines,
+          weight,
+          total,
         },
-        weight: weight,
-        total: total,
+        payment: {
+          payable: state.payment.payable,
+          pod: state.payment.pod,
+        },
       });
     }
   };
@@ -147,15 +155,17 @@ export default function OrderPostDialog({
 
     setState({
       type: "regular",
-      pod: false,
       payment: {
+        payable: 0,
+        pod: false,
         cash: "0",
         transfer: "0",
         acc: "0",
       },
     });
   };
-
+console.log(state);
+console.log(orderTypes);
   return (
     <DialogBase
       title="Post Order"
@@ -167,40 +177,38 @@ export default function OrderPostDialog({
       }}
     >
       <div>
-        {customer && (
-          <div className="py-0.5 grid grid-cols-3 gap-4">
-            <div className="flex items-center text-sm font-medium text-gray-600">
-              Type
-            </div>
-            <div className="col-span-2">
-              <div className="flex items-center space-x-2">
-                {OrderTypes.map((type) => (
-                  <label
-                    key={type.value}
-                    className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600"
-                  >
-                    <input
-                      name="order-type"
-                      type="radio"
-                      className="absolute inset-0 appearance-none focus:outline-0"
-                      value={type.value}
-                      checked={type.value === state.type}
-                      onChange={(e) => {
-                        setState({
-                          ...state,
-                          type: e.currentTarget.value,
-                        });
-                      }}
-                    />
-                    <span className="text-sm font-semibold text-gray-600 uppercase group-has-[:checked]:text-blue-600">
-                      {type.label}
-                    </span>
-                  </label>
-                ))}
-              </div>
+        <div className="py-0.5 grid grid-cols-3 gap-4">
+          <div className="flex items-center text-sm font-medium text-gray-600">
+            Type
+          </div>
+          <div className="col-span-2">
+            <div className="flex items-center space-x-2">
+              {orderTypes.map((type) => (
+                <label
+                  key={type.key}
+                  className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600"
+                >
+                  <input
+                    name="order-type"
+                    type="radio"
+                    className="absolute inset-0 appearance-none focus:outline-0"
+                    value={type.value}
+                    checked={type.value === state.type}
+                    onChange={(e) => {
+                      setState({
+                        ...state,
+                        type: e.currentTarget.value,
+                      });
+                    }}
+                  />
+                  <span className="text-sm font-semibold text-gray-600 uppercase group-has-[:checked]:text-blue-600">
+                    {type.key}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
-        )}
+        </div>
 
         <dl className="divide-y divide-gray-200">
           <div className="py-2 grid grid-cols-3 gap-4">
@@ -220,7 +228,7 @@ export default function OrderPostDialog({
           <div className="py-2">
             <p className="text-sm font-semibold text-gray-900 py-2">Payment</p>
 
-            {!state.pod && (
+            {!state.payment.pod && (
               <div className="py-1.5">
                 <div className="py-1.5 grid grid-cols-3 gap-4">
                   <dt
@@ -263,11 +271,14 @@ export default function OrderPostDialog({
                   name="pod"
                   type="checkbox"
                   className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                  checked={state.pod}
+                  checked={state.payment.pod}
                   onChange={(e) => {
                     setState({
                       ...state,
-                      pod: e.currentTarget.checked,
+                      payment: {
+                        ...state.payment,
+                        pod: e.currentTarget.checked,
+                      },
                     });
                   }}
                 />

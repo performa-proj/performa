@@ -26,6 +26,7 @@ interface IState {
   };
   returning: {
     returnlines: IReturnline[];
+    total: number;
   };
 }
 
@@ -40,7 +41,8 @@ export default function ReturnOrderSection({
       lines: {},
     },
     returning: {
-      returnlines: []
+      returnlines: [],
+      total: 0,
     },
   });
 
@@ -64,12 +66,17 @@ export default function ReturnOrderSection({
       nState.returning.returnlines = resolveReturning(nState.returnData)
     }
 
+    console.log(nState);
+
+    setState(nState);
   };
-  console.log(state);
 
   const handleOrderlineOpened = (sku: string) => {
     console.log(sku);
   };
+
+  console.log(order);
+  console.log(state);
 
   return (
     <div className="w-full h-full">
@@ -80,51 +87,10 @@ export default function ReturnOrderSection({
       </div>
 
       <div className="w-full py-1.5">
-        <table className="w-full border-y border-gray-300 divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th scope="col" className="p-2 text-sm font-semibold text-gray-900 text-right">
-                QTY.
-              </th>
-              <th scope="col" className="p-2 text-sm font-semibold text-gray-900 text-left">
-                Title
-              </th>
-              <th scope="col" className="p-2 text-sm font-semibold text-gray-900 text-right">
-                Price
-              </th>
-              <th scope="col" className="p-2 text-sm font-semibold text-gray-900 text-right">
-                Total
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            <Returnlines
-              returnlines={state.returning.returnlines}
-              onEditing={handleOrderlineOpened}
-            />
-          </tbody>
-          <tfoot>
-            <tr>
-              <td
-                scope="row"
-                colSpan={3}
-                className="p-2 text-left"
-              >
-                <div className="text-sm font-semibold text-gray-900">
-                  Order Total
-                </div>
-              </td>
-              <td
-                scope="row"
-                className="p-2 text-right"
-              >
-                <div className="text-sm font-semibold text-gray-900">
-                  {order.total}
-                </div>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+        <Returnlines
+          returnlines={state.returning.returnlines}
+          onEditing={handleOrderlineOpened}
+        />
       </div>
     </div>
   );
