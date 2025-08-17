@@ -45,6 +45,9 @@ export default function ProcessOrdersTable({
   onFulfillSelected: (orderID: string) => void;
   onReturnSelected: (orderID: string) => void;
 }) {
+  const weight = 0;
+  console.log(orders);
+
   return (
     <div className="bg-white h-full w-full">
       <table className="relative min-w-full divide-y divide-gray-200 border-b border-gray-200">
@@ -79,14 +82,14 @@ export default function ProcessOrdersTable({
                   <p className="text-xs font-medium text-gray-600">{order.transactionID}</p>
                   <p className="text-sm/6 font-semibold text-gray-900 mt-0.5">{order.customer ? order.customer.name : "[Walk-In]"}</p>
                   <p className="text-sm/6 font-medium text-gray-900 mt-2">
-                    {order.weight.toLocaleString()} KG. <Completed isShow={order.fulfillment?.completed || false} />
+                    {weight.toLocaleString()} KG. <Completed isShow={order.fulfilling?.completed || false} />
                   </p>
                 </div>
               </td>
               <td className="hidden sm:table-cell px-3 py-4">
                 <div className="flex items-center">
-                  <p className="text-sm/6 font-medium text-gray-900">{order.weight.toLocaleString()} KG.</p>
-                  <Completed isShow={order.fulfillment?.completed || false} />
+                  <p className="text-sm/6 font-medium text-gray-900">{weight.toLocaleString()} KG.</p>
+                  <Completed isShow={order.fulfilling?.completed || false} />
                 </div>
               </td>
               <td className="px-3 py-4">

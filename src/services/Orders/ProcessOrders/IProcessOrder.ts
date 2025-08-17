@@ -1,5 +1,5 @@
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { IOrderline } from "../IOrderline";
-import { IReturnline } from "../IReturnline";
 
 export interface IProcessOrder {
   _id: string;
@@ -16,8 +16,12 @@ export interface IProcessOrder {
     total: number;
   };
   returning?: {
-    lines: IReturnline[];
-    weight: number;
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+      };
+    };
     total: number;
   };
   fulfilling?: {

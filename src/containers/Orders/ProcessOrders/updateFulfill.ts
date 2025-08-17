@@ -1,4 +1,4 @@
-export const updateFulfillment = async (payloads: {
+export const updateFulfill = async (payloads: {
   _id: string;
   data: {
     completed: boolean;

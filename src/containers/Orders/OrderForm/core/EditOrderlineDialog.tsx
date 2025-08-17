@@ -4,7 +4,7 @@ import DialogBase from "@/containers/core/DialogBase";
 export default function EditOrderlineDialog({
   open,
   predata,
-  onDelete,
+  onDeleted,
   onUpdated,
   onClose,
 }: {
@@ -17,7 +17,7 @@ export default function EditOrderlineDialog({
     lowestPrice: number;
     sellingAt: number;
   };
-  onDelete: (data: {
+  onDeleted: (data: {
     sku: string;
   }) => void;
   onUpdated: (data: {
@@ -89,7 +89,7 @@ export default function EditOrderlineDialog({
       open={open}
       onClose={onClose}
       deleteButton={{
-        onDelete: () => onDelete({
+        onDelete: () => onDeleted({
           sku: predata.sku,
         }),
       }}

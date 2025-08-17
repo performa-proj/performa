@@ -12,24 +12,36 @@ export const resolveReturning = (data: {
       line: IProductItemLine;
     };
   };
-}): IReturnline[] => {
-  const returning = Object.values(data.lines).map((each) => {
-    const maxIndex = each.line.priceLevels.length - 1;
-    const index = data.level > maxIndex ? maxIndex : data.level;
-    const returningAt = each.line.priceLevels[index];
+}): {
+  lines: IReturnline[];
+  weight: number;
+  total: number;
+} => Object.values(data.lines).reduce((result, each) => {
+  const maxIndex = each.line.priceLevels.length - 1;
+  const index = data.level > maxIndex ? maxIndex : data.level;
+  const returningAt = each.line.priceLevels[index];
 
-    const returnline: IReturnline = {
-      quantity: each.quantity,
-      productID: each.line.productID,
-      sku: each.line.sku,
-      label: each.line.label,
-      weight: each.line.weight,
-      structureID: each.line.structureID,
-      returningAt,
-    };
+  const line: IReturnline = {
+    quantity: each.quantity,
+    productID: each.line.productID,
+    sku: each.line.sku,
+    label: each.line.label,
+    weight: each.line.weight,
+    structureID: each.line.structureID,
+    returningAt,
+  };
 
-    return returnline;
-  });
+  result.lines.push(line);
+  result.weight += line.quantity * line.weight;
+  result.total += line.quantity * line.returningAt;
 
-  return returning;
-};
+  return result;
+}, {
+  lines: [],
+  weight: 0,
+  total: 0,
+} as {
+  lines: IReturnline[];
+  weight: number;
+  total: number;
+});

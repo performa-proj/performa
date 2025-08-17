@@ -15,6 +15,38 @@ const OrderTypes = {
   PO: { key: "PO", label: "Preorder", value: "preorder" },
 };
 
+const resolvePayment = ({
+  total,
+  cash,
+  transfer,
+  acc,
+}: {
+  total: number;
+  cash: number;
+  transfer: number;
+  acc: number;
+}) => {
+  let payable = total - cash - transfer - acc;
+  payable = payable > 0 ? payable : 0;
+
+  return {
+    payable,
+    change: 0,
+  };
+};
+
+interface IState {
+  type: string;
+  payment: {
+    pod: boolean;
+    payable: number;
+    change: number;
+    cash: string;
+    transfer: string;
+    acc: string;
+  };
+}
+
 export default function OrderPostDialog({
   open,
   data: {
@@ -70,28 +102,42 @@ export default function OrderPostDialog({
   }) => void;
   onClose: () => void;
 }) {
-  const [state, setState] = React.useState({
+  const { customer, orderlines } = ordering;
+  const { weight, total } = summarizeOrderlines(orderlines);
+  const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
+console.log(total);
+  const [state, setState] = React.useState<IState>({
     type: "regular",
     payment: {
-      payable: 0,
       pod: false,
+      payable: total,
+      change: 0,
       cash: "0",
       transfer: "0",
       acc: "0",
     },
   });
-  const { customer, orderlines } = ordering;
-  const { weight, total } = summarizeOrderlines(orderlines);
-  const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
 
   const handleCashChanged = (value: string) => {
-    setState({
+    const nState = {
       ...state,
       payment: {
         ...state.payment,
         cash: resolveNumber(state.payment.cash, value),
       },
+    };
+
+    const { payable, change } = resolvePayment({
+      total,
+      cash: Number(nState.payment.cash),
+      transfer: Number(nState.payment.transfer),
+      acc: Number(nState.payment.acc),
     });
+
+    nState.payment.payable = payable;
+    nState.payment.change = change;
+
+    setState(nState);
   };
 
   const handleTransferChanged = (value: string) => {
@@ -110,6 +156,13 @@ export default function OrderPostDialog({
         },
       });
     }
+  };
+
+  const handleOrderTypeChanged = (value: string) => {
+    setState({
+      ...state,
+      type: value,
+    });
   };
 
   const handlePosting = () => {
@@ -156,16 +209,16 @@ export default function OrderPostDialog({
     setState({
       type: "regular",
       payment: {
-        payable: 0,
         pod: false,
+        payable: 0,
+        change: 0,
         cash: "0",
         transfer: "0",
         acc: "0",
       },
     });
   };
-console.log(state);
-console.log(orderTypes);
+
   return (
     <DialogBase
       title="Post Order"
@@ -194,12 +247,7 @@ console.log(orderTypes);
                     className="absolute inset-0 appearance-none focus:outline-0"
                     value={type.value}
                     checked={type.value === state.type}
-                    onChange={(e) => {
-                      setState({
-                        ...state,
-                        type: e.currentTarget.value,
-                      });
-                    }}
+                    onChange={(e) => handleOrderTypeChanged(e.currentTarget.value)}
                   />
                   <span className="text-sm font-semibold text-gray-600 uppercase group-has-[:checked]:text-blue-600">
                     {type.key}
@@ -225,46 +273,49 @@ console.log(orderTypes);
             </dd>
           </div>
 
-          <div className="py-2">
-            <p className="text-sm font-semibold text-gray-900 py-2">Payment</p>
+          <div>
+            <p className="text-sm font-semibold text-gray-900 pt-4.5">Payment</p>
 
-            {!state.payment.pod && (
-              <div className="py-1.5">
-                <div className="py-1.5 grid grid-cols-3 gap-4">
-                  <dt
-                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
-                  >
-                    Cash
-                  </dt>
-                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                    <input
-                      type="text"
-                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                      value={state.payment.cash}
-                      onChange={(e) => handleCashChanged(e.currentTarget.value)}
-                    />
-                  </dd>
-                </div>
-
-                <div className="py-1.5 grid grid-cols-3 gap-4">
-                  <dt
-                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
-                  >
-                    Transfer
-                  </dt>
-                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                    <input
-                      type="text"
-                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                      value={state.payment.transfer}
-                      onChange={(e) => handleTransferChanged(e.currentTarget.value)}
-                    />
-                  </dd>
-                </div>
+            <div className="py-1.5">
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-normal text-gray-600">
+                  Payable
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-normal text-gray-600">
+                  {state.payment.payable.toLocaleString()}
+                </dd>
               </div>
-            )}
 
-            <div className="pl-2 flex items-center space-x-2">
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600">
+                  Cash
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+                  <input
+                    type="text"
+                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                    value={state.payment.cash}
+                    onChange={(e) => handleCashChanged(e.currentTarget.value)}
+                  />
+                </dd>
+              </div>
+
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600">
+                  Transfer
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+                  <input
+                    type="text"
+                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                    value={state.payment.transfer}
+                    onChange={(e) => handleTransferChanged(e.currentTarget.value)}
+                  />
+                </dd>
+              </div>
+            </div>
+
+            <div className="flex items-center pl-2 space-x-2">
               <div className="group size-4 grid grid-cols-1">
                 <input
                   id="pod"

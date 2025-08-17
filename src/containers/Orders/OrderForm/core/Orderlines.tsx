@@ -99,8 +99,9 @@ export default function Orderlines({
               className="p-2 text-left"
             >
               <div className="flex items-baseline">
-                <p className="text-sm/6 font-semibold text-gray-900">Total</p>
-                <p className="mx-2 text-sm/6 font-semibold text-gray-900">[<span>{weight} KG</span>]</p>
+                <p className="text-sm/6 font-semibold text-gray-900">
+                  Total <span className="mx-2">[{weight} KG]</span>
+                </p>
               </div>
             </th>
             <th

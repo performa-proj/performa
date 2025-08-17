@@ -120,13 +120,13 @@ export default function OrderForm() {
         nState.ordering = resolveOrdering(nState.orderData);
         setState(nState);
       } else {
-        // SKU Not Found Handle
+        // Handle SKU-Not-Found
       }
     }
   };
 
   const handleEditOrderlineOpened = (sku: string) => {
-    const { quantity, line } = state.orderData.lines[sku];
+    const { line, quantity } = state.orderData.lines[sku];
     const index = state.ordering.orderlines.findIndex((each) => each.sku === sku);
     const lowestPrice = line.priceLevels.length > 1 ? line.priceLevels[1] : line.priceLevels[0];
 
@@ -257,7 +257,7 @@ export default function OrderForm() {
   return (
     <div className="flex w-full h-full bg-white">
       <div className="grow p-1.5 sm:px-4">
-        <div className="py-1.5 flex items-center">
+        <div className="flex items-center py-1.5">
           <CustomerSection
             orderData={state.orderData}
             onCustomer={handleCustomer}
@@ -297,7 +297,7 @@ export default function OrderForm() {
         <EditOrderlineDialog
           open={state.editOrderline !== undefined}
           predata={state.editOrderline}
-          onDelete={handleEditOrderlineDeleted}
+          onDeleted={handleEditOrderlineDeleted}
           onUpdated={handleEditOrderlineUpdated}
           onClose={handleEditOrderlineClosed}
         />

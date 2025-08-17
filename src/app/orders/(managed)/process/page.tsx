@@ -4,8 +4,9 @@ import React from "react";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { ProcessOrders } from "@/containers/Orders/ProcessOrders";
 import ProcessOrdersTable from "@/containers/Orders/ProcessOrders/ProcessOrdersTable";
-import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
-import ReturnOrder from "@/containers/Orders/ProcessOrders/ReturnOrder";
+// import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
+import { ReturnForm } from "@/containers/Orders/ProcessOrders/ReturnOrder";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export default function Page() {
   const [orders, setOrders] = React.useState<IProcessOrder[]>([]);
@@ -67,6 +68,28 @@ export default function Page() {
     });
   };
 
+  const handleReturnUpdated = (data: {
+    _id: string;
+    returning: {
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+        };
+      };
+      total: number;
+    };
+  }) => {
+    const nOrders = [...orders];
+    nOrders[returnSelected.index].returning = data.returning;
+    setOrders(nOrders);
+
+    setReturnSelected({
+      index: -1,
+      returnOrder: undefined,
+    });
+  };
+
   return (
     <div className="w-full h-full">
       {(fulfillSelected.fulfillOrder === undefined && returnSelected.returnOrder === undefined) && (
@@ -77,6 +100,7 @@ export default function Page() {
         />
       )}
       {fulfillSelected.fulfillOrder && (
+        /*
         <FulfillOrder
           order={fulfillSelected.fulfillOrder}
           onClose={() => setFulfillSelected({
@@ -85,14 +109,17 @@ export default function Page() {
           })}
           onUpdate={handleFulfillUpdated}
         />
+        */
+        <div>Hide Fullfilling </div>
       )}
       {returnSelected.returnOrder && (
-        <ReturnOrder
+        <ReturnForm
           order={returnSelected.returnOrder}
           onClose={() => setReturnSelected({
             index: -1,
             returnOrder: undefined,
           })}
+          onUpdated={handleReturnUpdated}
         />
       )}
     </div>

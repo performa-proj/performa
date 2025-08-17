@@ -4,7 +4,7 @@ import React from "react";
 import { ChevronLeftIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { resolveNumber } from "@/containers/core/resolveNumber";
-import { updateFulfillment } from "../updateFulfillment";
+import { updateFulfillment } from "../updateFulfill";
 import CounterDialog from "./CounterDialog";
 import { classnames } from "@/containers/core/classnames";
 
@@ -17,7 +17,7 @@ export default function FulfillOrder({
   onClose: () => void;
   onUpdate: (order: IProcessOrder) => void;
 }) {
-  const fulfillment = order.fulfillment || {
+  const fulfilling = order.fulfilling || {
     completed: false,
     orderlines: {},
   };
@@ -29,16 +29,16 @@ export default function FulfillOrder({
       count: number;
       completed: boolean;
     };
-  }>(order.orderlines.reduce((result, line) => {
-    if (fulfillment.orderlines[line.sku] === undefined) {
+  }>(order.ordering.lines.reduce((result, line) => {
+    if (fulfilling.orderlines[line.sku] === undefined) {
       result[line.sku] = {
         count: 0,
         completed: false,
       };
     } else {
       result[line.sku] = {
-        count: fulfillment.orderlines[line.sku].count,
-        completed: fulfillment.orderlines[line.sku].count < line.quantity ? false : true,
+        count: fulfilling.orderlines[line.sku].count,
+        completed: fulfilling.orderlines[line.sku].count < line.quantity ? false : true,
       };
     }
 
