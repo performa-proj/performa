@@ -9,38 +9,17 @@ import { IOrdering } from "@/services/Orders/IOrdering";
 import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { summarizeOrderlines } from "./summarizeOrderlines";
+import { resolvePayment } from "./resolvePayment";
 
 const OrderTypes = {
   RO: { key: "RO", label: "Regular", value: "regular" },
   PO: { key: "PO", label: "Preorder", value: "preorder" },
 };
 
-const resolvePayment = ({
-  total,
-  cash,
-  transfer,
-  acc,
-}: {
-  total: number;
-  cash: number;
-  transfer: number;
-  acc: number;
-}) => {
-  let payable = total - cash - transfer - acc;
-  payable = payable > 0 ? payable : 0;
-
-  return {
-    payable,
-    change: 0,
-  };
-};
-
 interface IState {
   type: string;
   payment: {
     pod: boolean;
-    payable: number;
-    change: number;
     cash: string;
     transfer: string;
     acc: string;
@@ -105,16 +84,22 @@ export default function OrderPostDialog({
   const { customer, orderlines } = ordering;
   const { weight, total } = summarizeOrderlines(orderlines);
   const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
-console.log(total);
   const [state, setState] = React.useState<IState>({
     type: "regular",
     payment: {
       pod: false,
-      payable: total,
-      change: 0,
       cash: "0",
       transfer: "0",
       acc: "0",
+    },
+  });
+
+  const { payable, change } = resolvePayment({
+    total,
+    payment: {
+      cash: Number(state.payment.cash),
+      transfer: Number(state.payment.transfer),
+      acc: Number(state.payment.acc),
     },
   });
 
@@ -126,16 +111,6 @@ console.log(total);
         cash: resolveNumber(state.payment.cash, value),
       },
     };
-
-    const { payable, change } = resolvePayment({
-      total,
-      cash: Number(nState.payment.cash),
-      transfer: Number(nState.payment.transfer),
-      acc: Number(nState.payment.acc),
-    });
-
-    nState.payment.payable = payable;
-    nState.payment.change = change;
 
     setState(nState);
   };
@@ -196,8 +171,8 @@ console.log(total);
           total,
         },
         payment: {
-          payable: state.payment.payable,
           pod: state.payment.pod,
+          payable,
         },
       });
     }
@@ -210,8 +185,6 @@ console.log(total);
       type: "regular",
       payment: {
         pod: false,
-        payable: 0,
-        change: 0,
         cash: "0",
         transfer: "0",
         acc: "0",
@@ -282,7 +255,7 @@ console.log(total);
                   Payable
                 </dt>
                 <dd className="col-span-2 text-sm/6 font-normal text-gray-600">
-                  {state.payment.payable.toLocaleString()}
+                  {payable.toLocaleString()} / {change.toLocaleString()}
                 </dd>
               </div>
 

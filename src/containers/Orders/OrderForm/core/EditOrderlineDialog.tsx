@@ -128,7 +128,7 @@ export default function EditOrderlineDialog({
             name="order-selling-at"
             autoComplete="off"
             className="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600"
-            disabled={true}
+            // disabled={true}
             value={state.sellingAt}
             placeholder="Order Price"
             onChange={(e) => handlePriceChanged(e.currentTarget.value)}

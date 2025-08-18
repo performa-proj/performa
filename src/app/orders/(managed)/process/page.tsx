@@ -9,6 +9,7 @@ import { ReturnForm } from "@/containers/Orders/ProcessOrders/ReturnOrder";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export default function Page() {
+  const [isLoading, setLoading] = React.useState(false);
   const [orders, setOrders] = React.useState<IProcessOrder[]>([]);
   const [fulfillSelected, setFulfillSelected] = React.useState<{
     index: number;
@@ -26,13 +27,16 @@ export default function Page() {
   });
 
   React.useEffect(() => {
-    loadOrders();
+    loadData();
   }, []);
 
-  const loadOrders = async () => {
-    const data = await ProcessOrders.listOrders();
+  const loadData = async () => {
+    setLoading(true);
 
+    const data = await ProcessOrders.listOrders();
     setOrders(data);
+
+    setLoading(false);
   };
 
   const handleFulfillSelected = (orderID: string) => {
@@ -94,7 +98,9 @@ export default function Page() {
     <div className="w-full h-full">
       {(fulfillSelected.fulfillOrder === undefined && returnSelected.returnOrder === undefined) && (
         <ProcessOrdersTable
+          isLoading={isLoading}
           orders={orders}
+          onReloading={() => loadData()}
           onFulfillSelected={handleFulfillSelected}
           onReturnSelected={handleReturnSelected}
         />
