@@ -1,14 +1,16 @@
-import { IOrderline } from "@/services/Orders/IOrderline";
+import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
+import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 
 export default function Orderlines({
   order
 }: {
-  order: {
-    orderlines: IOrderline[];
-    weight: number;
-    total: number;
-  };
+  order: IProcessOrder;
 }) {
+
+  const ordering = resolveOrdering({
+    level: order.level,
+    lines: order.ordering.data,
+  });
 
   return (
     <table className="w-full border-y border-gray-400 divide-y divide-gray-400">
@@ -29,7 +31,7 @@ export default function Orderlines({
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-300">
-        {order.orderlines.map((each) => {
+        {ordering.orderlines.map((each) => {
           const sellingTotal = each.quantity * each.sellingAt;
           return (
             <tr key={each.sku}>
@@ -73,14 +75,14 @@ export default function Orderlines({
           >
             <div className="flex items-baseline">
               <p className="text-sm/6 font-semibold text-gray-900">Total</p>
-              <p className="mx-2 text-sm/6 font-semibold text-gray-900">[<span>{order.weight} KG</span>]</p>
+              <p className="mx-2 text-sm/6 font-semibold text-gray-900">[<span>{order.ordering.weight} KG</span>]</p>
             </div>
           </th>
           <th
             scope="row"
             className="p-2 text-right"
           >
-            <div className="text-base font-semibold text-gray-900">{order.total.toLocaleString()}.00</div>
+            <div className="text-base font-semibold text-gray-900">{order.ordering.total.toLocaleString()}.00</div>
           </th>
         </tr>
       </tfoot>

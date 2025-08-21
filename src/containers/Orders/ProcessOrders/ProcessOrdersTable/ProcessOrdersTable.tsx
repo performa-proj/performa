@@ -3,6 +3,8 @@
 import React from "react";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { ArrowUturnDownIcon, BanknotesIcon, TruckIcon } from "@heroicons/react/24/outline";
+import { ReloadButton } from "@/containers/core/ReloadButton";
+import CheckboxBase from "@/containers/core/CheckboxBase";
 
 const PoD = ({
   isShow,
@@ -37,16 +39,29 @@ const Completed = ({
 };
 
 export default function ProcessOrdersTable({
+  isLoading,
   orders,
+  onReloading,
   onFulfillSelected,
   onReturnSelected,
 }: {
+  isLoading: boolean;
   orders: IProcessOrder[];
+  onReloading: () => void;
   onFulfillSelected: (orderID: string) => void;
   onReturnSelected: (orderID: string) => void;
 }) {
   return (
     <div className="bg-white h-full w-full">
+      <div className="flex px-3 py-2 border-b border-gray-200">
+        <div className="grow" />
+        <div>
+          <ReloadButton
+            isLoading={isLoading}
+            onClick={onReloading}
+          />
+        </div>
+      </div>
       <table className="relative min-w-full divide-y divide-gray-200 border-b border-gray-200">
         <thead>
           <tr>
@@ -54,13 +69,8 @@ export default function ProcessOrdersTable({
               Transaction ID
             </th>
             <th scope="col" className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-left">
-              <span className="hidden sm:inline">Customer</span> <span className="inline sm:hidden">Orders</span>
-            </th>
-            <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-sm font-semibold text-gray-900 text-left">
-              Fulfillment
-            </th>
-            <th scope="col" className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center">
-              Payment
+              <span className="hidden sm:inline">Customer</span>
+              <span className="inline sm:hidden">Orders</span>
             </th>
             <th scope="col" className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center w-40">
               Actions
@@ -68,50 +78,59 @@ export default function ProcessOrdersTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {orders.map((order) => (
-            <tr key={order._id}>
-              <td className="hidden sm:table-cell px-3 py-4 text-sm/6 font-normal text-gray-900 text-left w-35">{order.transactionID}</td>
-              <td className="px-3 py-3 sm:py-4 text-sm/6 font-semibold text-gray-900 text-left">
-                <div className="hidden sm:block">
-                  {order.customer ? order.customer.name : "[Walk-In]"}
-                </div>
-                <div className="block sm:hidden">
-                  <p className="text-xs font-medium text-gray-600">{order.transactionID}</p>
-                  <p className="text-sm/6 font-semibold text-gray-900 mt-0.5">{order.customer ? order.customer.name : "[Walk-In]"}</p>
-                  <p className="text-sm/6 font-medium text-gray-900 mt-2">
-                    {order.weight.toLocaleString()} KG. <Completed isShow={order.fulfillment?.completed || false} />
-                  </p>
-                </div>
-              </td>
-              <td className="hidden sm:table-cell px-3 py-4">
-                <div className="flex items-center">
-                  <p className="text-sm/6 font-medium text-gray-900">{order.weight.toLocaleString()} KG.</p>
-                  <Completed isShow={order.fulfillment?.completed || false} />
-                </div>
-              </td>
-              <td className="px-3 py-4">
-                <div className="flex items-center justify-center">
-                  <PoD isShow={order.payment.pod} />
-                </div>
-              </td>
-              <td className="px-3 py-2 w-40">
-                <div className="flex items-center justify-center gap-3">
-                  <TruckIcon
-                    className="cursor-pointer inline-block size-6 font-semibold text-gray-600 hover:text-gray-900 mx-1"
-                    onClick={() => onFulfillSelected(order._id)}
-                  />
-                  <ArrowUturnDownIcon
-                    className="cursor-pointer inline-block size-6 font-semibold text-gray-600 hover:text-gray-900 mx-1"
-                    onClick={() => onReturnSelected(order._id)}
-                  />
-                  <BanknotesIcon
-                    className="cursor-pointer inline-block size-6 font-semibold text-gray-600 hover:text-gray-900 mx-1"
-                    onClick={() => onFulfillSelected(order._id)}
-                  />
+          {isLoading ? (
+            <tr>
+              <td>
+                <div className="flex items-center justify-center h-32">
+                  <p className="text-sm/6 font-semibold text-gray-900">Loading...</p>
                 </div>
               </td>
             </tr>
-          ))}
+          ) : orders.length === 0 ? (
+            <tr>
+              <td colSpan={2}>
+                <div className="flex items-center justify-center h-32">
+                  <p className="text-sm/6 font-semibold text-gray-900">No Data</p>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <>
+              {orders.map((order) => (
+                <tr key={order._id}>
+                  <td className="hidden sm:table-cell px-3 py-4 text-left w-35">
+                    <p className="text-sm/6 font-normal text-gray-900">{order.transactionID}</p>
+                  </td>
+                  <td className="px-3 py-3 sm:py-4 text-left">
+                    <div className="hidden sm:block">
+                      <p className="text-sm/6 font-semibold text-gray-900">
+                        {order.customer ? order.customer.name : "[Walk-In]"}
+                      </p>
+                    </div>
+                    <div className="block sm:hidden">
+                      <p className="text-xs font-medium text-gray-600">{order.transactionID}</p>
+                      <p className="text-sm/6 font-semibold text-gray-900 mt-1">{order.customer ? order.customer.name : "[Walk-In]"}</p>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <TruckIcon
+                        className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 mx-1"
+                        onClick={() => onFulfillSelected(order._id)}
+                      />
+                      <ArrowUturnDownIcon
+                        className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 mx-1"
+                        onClick={() => onReturnSelected(order._id)}
+                      />
+                      <BanknotesIcon
+                        className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 mx-1"
+                        onClick={() => onFulfillSelected(order._id)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </>)}
         </tbody>
       </table>
     </div>

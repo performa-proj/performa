@@ -1,6 +1,6 @@
 import { COLLECTION_NAME, Data } from "@/db";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { Sessions } from "../../Sessions";
-import { IOrderline } from "../IOrderline";
 import { IProcessOrder } from "./IProcessOrder";
 
 export const createNew = async (props: {
@@ -13,20 +13,27 @@ export const createNew = async (props: {
     creditLimit: number;
     creditSpent: number;
   } | undefined;
-  orderlines: IOrderline[];
+  ordering: {
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+        sellingAt: number | undefined;
+      };
+    };
+    weight: number;
+    total: number;
+  };
   payment: {
+    payable: number;
     pod: boolean;
   };
-  weight: number;
-  total: number;
 }): Promise<IProcessOrder> => {
   const {
     level,
     customer,
-    orderlines,
+    ordering,
     payment,
-    weight,
-    total,
   } = props;
 
   const db = await Data.connectDB();
@@ -47,15 +54,14 @@ export const createNew = async (props: {
       name: customer.name,
       mobile: customer.mobile,
     } : undefined,
-    orderlines,
+    ordering,
     payment,
-    weight,
-    total,
     createdAt: now,
     updatedAt: now,
   };
 
   const result = await db.collection(COLLECTION_NAME.ProcessOrders).insertOne(data);
+
   await Sessions.commitTransaction(sessionID);
 
   return {

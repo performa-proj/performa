@@ -2,14 +2,13 @@
 
 import React from "react";
 
+import { Products } from "@/containers/Products";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
-import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
-import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
-import { Products } from "@/containers/Products";
+import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 
 import { Preorders } from "../Preorders";
 import { ProcessOrders } from "../ProcessOrders";
@@ -45,7 +44,6 @@ export default function OrderForm() {
       lines: {},
     },
     ordering: {
-      customer: undefined,
       level: MaxLevel,
       orderlines: [],
     },
@@ -120,13 +118,13 @@ export default function OrderForm() {
         nState.ordering = resolveOrdering(nState.orderData);
         setState(nState);
       } else {
-        // SKU Not Found Handle
+        // Handle SKU-Not-Found
       }
     }
   };
 
   const handleEditOrderlineOpened = (sku: string) => {
-    const { quantity, line } = state.orderData.lines[sku];
+    const { line, quantity } = state.orderData.lines[sku];
     const index = state.ordering.orderlines.findIndex((each) => each.sku === sku);
     const lowestPrice = line.priceLevels.length > 1 ? line.priceLevels[1] : line.priceLevels[0];
 
@@ -205,7 +203,7 @@ export default function OrderForm() {
     console.log("Preorder created:", preorder);
   };
 
-  const handlePlacing = async (data: {
+  const handleOrdering = async (data: {
     level: number;
     customer: {
       id: string;
@@ -215,12 +213,21 @@ export default function OrderForm() {
       creditLimit: number;
       creditSpent: number;
     } | undefined;
-    orderlines: IOrderline[];
+    ordering: {
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+          sellingAt: number | undefined;
+        };
+      };
+      weight: number;
+      total: number;
+    };
     payment: {
+      payable: number;
       pod: boolean;
     };
-    weight: number;
-    total: number;
   }) => {
     const order = await ProcessOrders.createOrder(data);
 
@@ -231,7 +238,6 @@ export default function OrderForm() {
         lines: {},
       },
       ordering: {
-        customer: undefined,
         level: MaxLevel,
         orderlines: [],
       },
@@ -254,13 +260,12 @@ export default function OrderForm() {
   return (
     <div className="flex w-full h-full bg-white">
       <div className="grow p-1.5 sm:px-4">
-        <div className="py-1.5 flex items-center">
+        <div className="flex items-center py-1.5">
           <CustomerSection
             orderData={state.orderData}
             onCustomer={handleCustomer}
             onRemove={handleCustomerRemoved}
           />
-
           <div className="pl-2 ml-2 border-l border-gray-200">
             <button
               type="button"
@@ -270,7 +275,6 @@ export default function OrderForm() {
               Post
             </button>
           </div>
-
         </div>
 
         <ProductsSection
@@ -288,7 +292,7 @@ export default function OrderForm() {
           ordering: state.ordering,
         }}
         onPreordering={handlePreordering}
-        onPlacing={handlePlacing}
+        onOrdering={handleOrdering}
         onClose={() => setOpen(false)}
       />
 
@@ -296,7 +300,7 @@ export default function OrderForm() {
         <EditOrderlineDialog
           open={state.editOrderline !== undefined}
           predata={state.editOrderline}
-          onDelete={handleEditOrderlineDeleted}
+          onDeleted={handleEditOrderlineDeleted}
           onUpdated={handleEditOrderlineUpdated}
           onClose={handleEditOrderlineClosed}
         />

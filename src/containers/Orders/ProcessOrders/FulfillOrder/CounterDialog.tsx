@@ -2,13 +2,14 @@
 
 import React from "react";
 import DialogBase from "@/containers/core/DialogBase";
+import CheckboxBase from "@/containers/core/CheckboxBase";
 import { resolveNumber } from "@/containers/core/resolveNumber";
 
 export default function CounterDialog({
   open,
   predata,
+  onSave,
   onClose,
-  onCompleted,
 }: {
   open: boolean;
   predata: {
@@ -18,24 +19,53 @@ export default function CounterDialog({
     quantity: number;
     count: number;
   };
-  onCompleted: () => void;
+  onSave: (data: {
+    sku: string;
+    count: number;
+    completed: boolean;
+  }) => void;
   onClose: (count: number) => void;
 }) {
-  const [state, setState] = React.useState(predata.count.toString());
+  const [state, setState] = React.useState<{
+    count: string;
+    completed: boolean;
+  }>({
+    count: predata.count.toString(),
+    completed: false,
+  });
 
   const handleCountChanged = (value: string) => {
-    let nState = resolveNumber(state, value);
+    const nState = {
+      ...state,
+      count: resolveNumber(state.count, value),
+    };
 
-    if (Number(nState) > predata.quantity) {
-      nState = predata.quantity.toString();
+    if (Number(nState.count) > predata.quantity) {
+      nState.count = predata.quantity.toString();
+    }
+
+    if (Number(nState.count) === predata.quantity) {
+      nState.completed = true;
     }
 
     setState(nState);
   };
 
-  const handleCompleted = () => {
-    onCompleted();
-    setState(predata.quantity.toString());
+  const handleCompletedChecked = () => {
+    const nState = {
+      ...state,
+      completed: !state.completed,
+    };
+
+    setState(nState);
+  };
+
+  const handleSaved = () => {
+    onSave({
+      sku: predata.sku,
+      count: Number(state.count),
+      completed: state.completed,
+    });
   };
 
   const handleClose = () => {
@@ -44,15 +74,12 @@ export default function CounterDialog({
 
   return (
     <DialogBase
-      title="Orderline Counter"
+      title="Product Item Counter"
       open={open}
       onClose={handleClose}
-      closeButton={{
-        title: "Close",
-      }}
       submitButton={{
-        title: "Mark Completed",
-        onSubmit: handleCompleted,
+        title: "Save",
+        onSubmit: handleSaved,
       }}
     >
       <div className="py-1.5">
@@ -60,7 +87,7 @@ export default function CounterDialog({
         <p className="block mt-2 text-sm/6 font-semibold text-gray-900">{predata.sku} - {predata.label}</p>
       </div>
 
-      <div className="mt-5 grid grid-cols-2">
+      <div className="mt-3 grid grid-cols-2">
         <div>
           <label className="block text-sm/6 font-medium text-gray-900">Quantity</label>
           <p className="block mt-2 text-lg font-semibold text-gray-900">{predata.quantity}</p>
@@ -70,10 +97,26 @@ export default function CounterDialog({
           <div className="mt-2">
             <input
               type="string"
-              value={state}
+              value={state.count}
               onChange={(e) => handleCountChanged(e.currentTarget.value)}
               className="block min-w-0 max-w-24 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6"
             />
+          </div>
+        </div>
+        <div className="mt-3 flex gap-2">
+          <CheckboxBase
+            id="mark-completed"
+            name="mark-complete"
+            checked={state.completed}
+            onChange={() => handleCompletedChecked()}
+          />
+          <div className="text-sm/6">
+            <label
+            className="text-sm font-normal text-gray-900"
+              onClick={() => handleCompletedChecked()}
+            >
+              Completed
+            </label>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { IOrderline } from "../IOrderline";
 
 export interface IProcessOrder {
@@ -9,31 +10,51 @@ export interface IProcessOrder {
     name: string;
     mobile: string;
   } | undefined;
-  orderlines: IOrderline[];
-  fulfillment?: {
+  ordering: {
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+        sellingAt: number | undefined;
+      };
+    };
+    weight: number;
+    total: number;
+  };
+  returning?: {
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+      };
+    };
+    total: number;
+  };
+  fulfilling?: {
     completed: boolean;
     vehicle?: {
-      plate?: string;
+      plate: string;
       weight: {
         initial: number;
         loaded: number;
       };
     };
-    orderlines: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
+    weight: number;
   };
   payment: {
+    payable: number;
     pod: boolean;
     cash?: number;
     transfer?: {
       amount: number;
     };
   };
-  weight: number;
-  total: number;
   createdAt: Date;
   updatedAt: Date;
 }

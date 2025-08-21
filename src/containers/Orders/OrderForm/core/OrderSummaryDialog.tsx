@@ -68,7 +68,7 @@ export default function OrderSummaryDialog({
                     Total
                   </label>
                   <div className="flex mt-1">
-                    <p className="flex-auto text-lg font-semibold text-gray-900">{order.total.toLocaleString()}</p>
+                    <p className="flex-auto text-lg font-semibold text-gray-900">{order.ordering.total.toLocaleString()}</p>
                     <div>
                       <Unpaid />
                     </div>

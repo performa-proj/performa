@@ -1,5 +1,6 @@
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { IOrderline } from "@/services/Orders/IOrderline";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export const createOrder = async (payloads: {
   level: number;
@@ -11,12 +12,21 @@ export const createOrder = async (payloads: {
     creditLimit: number;
     creditSpent: number;
   } | undefined;
-  orderlines: IOrderline[];
+  ordering: {
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+        sellingAt: number | undefined;
+      };
+    };
+    weight: number;
+    total: number;
+  };
   payment: {
+    payable: number;
     pod: boolean;
   };
-  weight: number;
-  total: number;
 }): Promise<IProcessOrder> => {
   const response = await fetch("/api/orders/process", {
     method: "POST",
@@ -25,6 +35,7 @@ export const createOrder = async (payloads: {
     },
     body: JSON.stringify(payloads),
   });
+
   const json: IProcessOrder = await response.json();
   json.createdAt = new Date(json.createdAt);
   json.updatedAt = new Date(json.updatedAt);

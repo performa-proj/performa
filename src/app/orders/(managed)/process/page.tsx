@@ -5,9 +5,11 @@ import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { ProcessOrders } from "@/containers/Orders/ProcessOrders";
 import ProcessOrdersTable from "@/containers/Orders/ProcessOrders/ProcessOrdersTable";
 import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
-import ReturnOrder from "@/containers/Orders/ProcessOrders/ReturnOrder";
+import { ReturnForm } from "@/containers/Orders/ProcessOrders/ReturnOrder";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export default function Page() {
+  const [isLoading, setLoading] = React.useState(false);
   const [orders, setOrders] = React.useState<IProcessOrder[]>([]);
   const [fulfillSelected, setFulfillSelected] = React.useState<{
     index: number;
@@ -25,13 +27,16 @@ export default function Page() {
   });
 
   React.useEffect(() => {
-    loadOrders();
+    loadData();
   }, []);
 
-  const loadOrders = async () => {
-    const data = await ProcessOrders.listOrders();
+  const loadData = async () => {
+    setLoading(true);
 
+    const data = await ProcessOrders.listOrders();
     setOrders(data);
+
+    setLoading(false);
   };
 
   const handleFulfillSelected = (orderID: string) => {
@@ -67,11 +72,35 @@ export default function Page() {
     });
   };
 
+  const handleReturnUpdated = (data: {
+    _id: string;
+    returning: {
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+        };
+      };
+      total: number;
+    };
+  }) => {
+    const nOrders = [...orders];
+    nOrders[returnSelected.index].returning = data.returning;
+    setOrders(nOrders);
+
+    setReturnSelected({
+      index: -1,
+      returnOrder: undefined,
+    });
+  };
+
   return (
     <div className="w-full h-full">
       {(fulfillSelected.fulfillOrder === undefined && returnSelected.returnOrder === undefined) && (
         <ProcessOrdersTable
+          isLoading={isLoading}
           orders={orders}
+          onReloading={() => loadData()}
           onFulfillSelected={handleFulfillSelected}
           onReturnSelected={handleReturnSelected}
         />
@@ -83,16 +112,16 @@ export default function Page() {
             index: -1,
             fulfillOrder: undefined,
           })}
-          onUpdate={handleFulfillUpdated}
         />
       )}
       {returnSelected.returnOrder && (
-        <ReturnOrder
+        <ReturnForm
           order={returnSelected.returnOrder}
           onClose={() => setReturnSelected({
             index: -1,
             returnOrder: undefined,
           })}
+          onUpdated={handleReturnUpdated}
         />
       )}
     </div>

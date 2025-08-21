@@ -3,15 +3,6 @@ import { IOrdering } from "./IOrdering";
 import { IOrderline } from "./IOrderline";
 
 export const resolveOrdering = (orderData: IOrderData): IOrdering => ({
-  customer: orderData.customer ? {
-    id: orderData.customer.id,
-    name: orderData.customer.name,
-    mobile: orderData.customer.mobile,
-    creditDays: orderData.customer.creditDays,
-    creditLimit: orderData.customer.creditLimit,
-    creditSpent: orderData.customer.creditSpent,
-    creditAvailable: orderData.customer.creditLimit - orderData.customer.creditSpent,
-  } : undefined,
   level: orderData.level,
   orderlines: Object.values(orderData.lines).map((each) => {
     const maxIndex = each.line.priceLevels.length - 1;

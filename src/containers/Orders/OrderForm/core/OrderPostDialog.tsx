@@ -6,14 +6,24 @@ import DialogBase from "@/containers/core/DialogBase";
 import { resolveNumber } from "@/containers/core/resolveNumber";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
-import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
-import { summarizeOrder } from "./summarizeOrder";
+import { summarizeOrderlines } from "./summarizeOrderlines";
+import { resolvePayment } from "./resolvePayment";
 
-const OrderTypes = [
-  { label: "RO", value: "regular" },
-  { label: "PO", value: "preorder" },
-];
+const OrderTypes = {
+  RO: { key: "RO", label: "Regular", value: "regular" },
+  PO: { key: "PO", label: "Preorder", value: "preorder" },
+};
+
+interface IState {
+  type: string;
+  payment: {
+    pod: boolean;
+    cash: string;
+    transfer: string;
+    acc: string;
+  };
+}
 
 export default function OrderPostDialog({
   open,
@@ -22,7 +32,7 @@ export default function OrderPostDialog({
     ordering,
   },
   onPreordering,
-  onPlacing,
+  onOrdering,
   onClose,
 }: {
   open: boolean;
@@ -48,7 +58,7 @@ export default function OrderPostDialog({
       };
     };
   }) => void;
-  onPlacing: (data: {
+  onOrdering: (data: {
     level: number;
     customer: {
       id: string;
@@ -58,35 +68,57 @@ export default function OrderPostDialog({
       creditLimit: number;
       creditSpent: number;
     } | undefined;
-    orderlines: IOrderline[];
+    ordering: {
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+          sellingAt: number | undefined;
+        };
+      };
+      weight: number;
+      total: number;
+    };
     payment: {
+      payable: number;
       pod: boolean;
     };
-    weight: number;
-    total: number;
   }) => void;
   onClose: () => void;
 }) {
-  const [state, setState] = React.useState({
+  const { orderlines } = ordering;
+  const { customer } = orderData;
+  const { weight, total } = summarizeOrderlines(orderlines);
+  const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
+  const [state, setState] = React.useState<IState>({
     type: "regular",
-    pod: false,
     payment: {
+      pod: false,
       cash: "0",
       transfer: "0",
       acc: "0",
     },
   });
-  const { customer, orderlines } = ordering;
-  const { weight, total } = summarizeOrder(orderlines);
+
+  const { payable, change } = resolvePayment({
+    total,
+    payment: {
+      cash: Number(state.payment.cash),
+      transfer: Number(state.payment.transfer),
+      acc: Number(state.payment.acc),
+    },
+  });
 
   const handleCashChanged = (value: string) => {
-    setState({
+    const nState = {
       ...state,
       payment: {
         ...state.payment,
         cash: resolveNumber(state.payment.cash, value),
       },
-    });
+    };
+
+    setState(nState);
   };
 
   const handleTransferChanged = (value: string) => {
@@ -107,6 +139,13 @@ export default function OrderPostDialog({
     }
   };
 
+  const handleOrderTypeChanged = (value: string) => {
+    setState({
+      ...state,
+      type: value,
+    });
+  };
+
   const handlePosting = () => {
     if (state.type === "preorder" && orderData.customer) {
       onPreordering({
@@ -122,22 +161,25 @@ export default function OrderPostDialog({
         lines: orderData.lines,
       });
     } else {
-      onPlacing({
+      onOrdering({
         level: ordering.level,
-        customer: ordering.customer ? {
-          id: ordering.customer.id,
-          name: ordering.customer.name,
-          mobile: ordering.customer.mobile,
-          creditDays: ordering.customer.creditDays,
-          creditLimit: ordering.customer.creditLimit,
-          creditSpent: ordering.customer.creditSpent,
+        customer: customer ? {
+          id: customer.id,
+          name: customer.name,
+          mobile: customer.mobile,
+          creditDays: customer.creditDays,
+          creditLimit: customer.creditLimit,
+          creditSpent: customer.creditSpent,
         } : undefined,
-        orderlines: ordering.orderlines,
-        payment: {
-          pod: state.pod,
+        ordering: {
+          data: orderData.lines,
+          weight,
+          total,
         },
-        weight: weight,
-        total: total,
+        payment: {
+          pod: state.payment.pod,
+          payable,
+        },
       });
     }
   };
@@ -147,8 +189,8 @@ export default function OrderPostDialog({
 
     setState({
       type: "regular",
-      pod: false,
       payment: {
+        pod: false,
         cash: "0",
         transfer: "0",
         acc: "0",
@@ -167,40 +209,33 @@ export default function OrderPostDialog({
       }}
     >
       <div>
-        {customer && (
-          <div className="py-0.5 grid grid-cols-3 gap-4">
-            <div className="flex items-center text-sm font-medium text-gray-600">
-              Type
-            </div>
-            <div className="col-span-2">
-              <div className="flex items-center space-x-2">
-                {OrderTypes.map((type) => (
-                  <label
-                    key={type.value}
-                    className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600"
-                  >
-                    <input
-                      name="order-type"
-                      type="radio"
-                      className="absolute inset-0 appearance-none focus:outline-0"
-                      value={type.value}
-                      checked={type.value === state.type}
-                      onChange={(e) => {
-                        setState({
-                          ...state,
-                          type: e.currentTarget.value,
-                        });
-                      }}
-                    />
-                    <span className="text-sm font-semibold text-gray-600 uppercase group-has-[:checked]:text-blue-600">
-                      {type.label}
-                    </span>
-                  </label>
-                ))}
-              </div>
+        <div className="py-0.5 grid grid-cols-3 gap-4">
+          <div className="flex items-center text-sm font-medium text-gray-600">
+            Type
+          </div>
+          <div className="col-span-2">
+            <div className="flex items-center space-x-2">
+              {orderTypes.map((type) => (
+                <label
+                  key={type.key}
+                  className="group relative flex items-center justify-center rounded-sm border border-gray-300 bg-white px-1.5 py-1 has-[:checked]:border-blue-600 has-[:checked]:text-blue-600 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600"
+                >
+                  <input
+                    name="order-type"
+                    type="radio"
+                    className="absolute inset-0 appearance-none focus:outline-0"
+                    value={type.value}
+                    checked={type.value === state.type}
+                    onChange={(e) => handleOrderTypeChanged(e.currentTarget.value)}
+                  />
+                  <span className="text-sm font-semibold text-gray-600 uppercase group-has-[:checked]:text-blue-600">
+                    {type.key}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
-        )}
+        </div>
 
         <dl className="divide-y divide-gray-200">
           <div className="py-2 grid grid-cols-3 gap-4">
@@ -217,57 +252,63 @@ export default function OrderPostDialog({
             </dd>
           </div>
 
-          <div className="py-2">
-            <p className="text-sm font-semibold text-gray-900 py-2">Payment</p>
+          <div>
+            <p className="text-sm font-semibold text-gray-900 pt-4.5">Payment</p>
 
-            {!state.pod && (
-              <div className="py-1.5">
-                <div className="py-1.5 grid grid-cols-3 gap-4">
-                  <dt
-                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
-                  >
-                    Cash
-                  </dt>
-                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                    <input
-                      type="text"
-                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                      value={state.payment.cash}
-                      onChange={(e) => handleCashChanged(e.currentTarget.value)}
-                    />
-                  </dd>
-                </div>
-
-                <div className="py-1.5 grid grid-cols-3 gap-4">
-                  <dt
-                    className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600"
-                  >
-                    Transfer
-                  </dt>
-                  <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
-                    <input
-                      type="text"
-                      className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
-                      value={state.payment.transfer}
-                      onChange={(e) => handleTransferChanged(e.currentTarget.value)}
-                    />
-                  </dd>
-                </div>
+            <div className="py-1.5">
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-normal text-gray-600">
+                  Payable
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-normal text-gray-600">
+                  {payable.toLocaleString()} / {change.toLocaleString()}
+                </dd>
               </div>
-            )}
 
-            <div className="pl-2 flex items-center space-x-2">
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600">
+                  Cash
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+                  <input
+                    type="text"
+                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                    value={state.payment.cash}
+                    onChange={(e) => handleCashChanged(e.currentTarget.value)}
+                  />
+                </dd>
+              </div>
+
+              <div className="py-1.5 grid grid-cols-3 gap-4">
+                <dt className="cursor-pointer pl-2 text-sm/6 font-medium text-gray-600">
+                  Transfer
+                </dt>
+                <dd className="col-span-2 text-sm/6 font-semibold text-gray-900">
+                  <input
+                    type="text"
+                    className="w-full bg-white text-gray-900 border-b border-gray-200 focus:outline-0 focus:border-blue-600"
+                    value={state.payment.transfer}
+                    onChange={(e) => handleTransferChanged(e.currentTarget.value)}
+                  />
+                </dd>
+              </div>
+            </div>
+
+            <div className="flex items-center pl-2 space-x-2">
               <div className="group size-4 grid grid-cols-1">
                 <input
                   id="pod"
                   name="pod"
                   type="checkbox"
                   className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                  checked={state.pod}
+                  checked={state.payment.pod}
                   onChange={(e) => {
                     setState({
                       ...state,
-                      pod: e.currentTarget.checked,
+                      payment: {
+                        ...state.payment,
+                        pod: e.currentTarget.checked,
+                      },
                     });
                   }}
                 />

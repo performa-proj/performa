@@ -11,7 +11,7 @@ export default function Returnline({
   onEditing: (sku: string) => void;
 }) {
   const { quantity, label, sku, returningAt } = data;
-  const returingTotal = quantity * returningAt;
+  const returningTotal = quantity * returningAt;
 
   return (
     <tr
@@ -35,13 +35,13 @@ export default function Returnline({
         scope="col"
         className="p-2 text-right"
       >
-        <div className="text-sm font-medium text-gray-900">{}</div>
+        <div className="text-sm font-medium text-gray-900">{returningAt.toLocaleString()}</div>
       </td>
       <td
         scope="col"
         className="p-2 text-right"
       >
-        <div className="text-sm font-medium text-gray-900"></div>
+        <div className="text-sm font-medium text-gray-900">{returningTotal.toLocaleString()}</div>
       </td>
     </tr>
   );
