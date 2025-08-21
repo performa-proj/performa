@@ -1,5 +1,6 @@
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { IOrderline } from "@/services/Orders/IOrderline";
+import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export const createOrder = async (payloads: {
   level: number;
@@ -12,7 +13,13 @@ export const createOrder = async (payloads: {
     creditSpent: number;
   } | undefined;
   ordering: {
-    lines: IOrderline[];
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+        sellingAt: number | undefined;
+      };
+    };
     weight: number;
     total: number;
   };
@@ -28,6 +35,7 @@ export const createOrder = async (payloads: {
     },
     body: JSON.stringify(payloads),
   });
+
   const json: IProcessOrder = await response.json();
   json.createdAt = new Date(json.createdAt);
   json.updatedAt = new Date(json.updatedAt);

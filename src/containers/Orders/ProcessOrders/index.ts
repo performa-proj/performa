@@ -1,11 +1,11 @@
 import { createOrder } from "./createOrder";
 import { listOrders } from "./listOrders";
-import { updateFulfill } from "./updateFulfill";
+import { updateFulfilling } from "./updateFulfilling";
 import { updateReturn } from "./updateReturn";
 
 export const ProcessOrders = {
   createOrder,
   listOrders,
-  updateFulfill,
+  updateFulfilling,
   updateReturn,
 };

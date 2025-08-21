@@ -6,7 +6,6 @@ import DialogBase from "@/containers/core/DialogBase";
 import { resolveNumber } from "@/containers/core/resolveNumber";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
-import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 import { summarizeOrderlines } from "./summarizeOrderlines";
 import { resolvePayment } from "./resolvePayment";
@@ -70,7 +69,13 @@ export default function OrderPostDialog({
       creditSpent: number;
     } | undefined;
     ordering: {
-      lines: IOrderline[];
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+          sellingAt: number | undefined;
+        };
+      };
       weight: number;
       total: number;
     };
@@ -81,7 +86,8 @@ export default function OrderPostDialog({
   }) => void;
   onClose: () => void;
 }) {
-  const { customer, orderlines } = ordering;
+  const { orderlines } = ordering;
+  const { customer } = orderData;
   const { weight, total } = summarizeOrderlines(orderlines);
   const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
   const [state, setState] = React.useState<IState>({
@@ -157,16 +163,16 @@ export default function OrderPostDialog({
     } else {
       onOrdering({
         level: ordering.level,
-        customer: ordering.customer ? {
-          id: ordering.customer.id,
-          name: ordering.customer.name,
-          mobile: ordering.customer.mobile,
-          creditDays: ordering.customer.creditDays,
-          creditLimit: ordering.customer.creditLimit,
-          creditSpent: ordering.customer.creditSpent,
+        customer: customer ? {
+          id: customer.id,
+          name: customer.name,
+          mobile: customer.mobile,
+          creditDays: customer.creditDays,
+          creditLimit: customer.creditLimit,
+          creditSpent: customer.creditSpent,
         } : undefined,
         ordering: {
-          lines: ordering.orderlines,
+          data: orderData.lines,
           weight,
           total,
         },

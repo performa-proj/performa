@@ -1,34 +1,20 @@
-export const updateFulfill = async (payloads: {
+export const updateFulfilling = async (payloads: {
   _id: string;
-  data: {
-    completed: boolean;
-    vehicle?: {
-      plate?: string;
-      weight: {
-        initial: number;
-        loaded: number;
-      };
-    };
-    orderlines: {
+  fulfilling: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
   };
 }): Promise<{
   _id: string;
   fulfillment: {
-    completed: boolean;
-    vehicle?: {
-      plate?: string;
-      weight: {
-        initial: number;
-        loaded: number;
-      };
-    };
-    orderlines: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
   };

@@ -2,14 +2,13 @@
 
 import React from "react";
 
+import { Products } from "@/containers/Products";
 import { ICustomer } from "@/services/Identities/Customers/ICustomer";
 import { IOrderData } from "@/services/Orders/IOrderData";
 import { IOrdering } from "@/services/Orders/IOrdering";
-import { IOrderline } from "@/services/Orders/IOrderline";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
-import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
-import { Products } from "@/containers/Products";
+import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 
 import { Preorders } from "../Preorders";
 import { ProcessOrders } from "../ProcessOrders";
@@ -45,7 +44,6 @@ export default function OrderForm() {
       lines: {},
     },
     ordering: {
-      customer: undefined,
       level: MaxLevel,
       orderlines: [],
     },
@@ -216,7 +214,13 @@ export default function OrderForm() {
       creditSpent: number;
     } | undefined;
     ordering: {
-      lines: IOrderline[];
+      data: {
+        [sku: string]: {
+          quantity: number;
+          line: IProductItemLine;
+          sellingAt: number | undefined;
+        };
+      };
       weight: number;
       total: number;
     };
@@ -234,7 +238,6 @@ export default function OrderForm() {
         lines: {},
       },
       ordering: {
-        customer: undefined,
         level: MaxLevel,
         orderlines: [],
       },

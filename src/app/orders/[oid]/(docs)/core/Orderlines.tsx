@@ -1,10 +1,16 @@
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
+import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 
 export default function Orderlines({
   order
 }: {
   order: IProcessOrder;
 }) {
+
+  const ordering = resolveOrdering({
+    level: order.level,
+    lines: order.ordering.data,
+  });
 
   return (
     <table className="w-full border-y border-gray-400 divide-y divide-gray-400">
@@ -25,7 +31,7 @@ export default function Orderlines({
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-300">
-        {order.ordering.lines.map((each) => {
+        {ordering.orderlines.map((each) => {
           const sellingTotal = each.quantity * each.sellingAt;
           return (
             <tr key={each.sku}>

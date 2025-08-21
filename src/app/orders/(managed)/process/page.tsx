@@ -4,7 +4,7 @@ import React from "react";
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { ProcessOrders } from "@/containers/Orders/ProcessOrders";
 import ProcessOrdersTable from "@/containers/Orders/ProcessOrders/ProcessOrdersTable";
-// import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
+import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
 import { ReturnForm } from "@/containers/Orders/ProcessOrders/ReturnOrder";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
@@ -106,17 +106,13 @@ export default function Page() {
         />
       )}
       {fulfillSelected.fulfillOrder && (
-        /*
         <FulfillOrder
           order={fulfillSelected.fulfillOrder}
           onClose={() => setFulfillSelected({
             index: -1,
             fulfillOrder: undefined,
           })}
-          onUpdate={handleFulfillUpdated}
         />
-        */
-        <div>Hide Fullfilling </div>
       )}
       {returnSelected.returnOrder && (
         <ReturnForm

@@ -1,43 +1,30 @@
 import { ObjectId } from "mongodb";
 import { COLLECTION_NAME, Data } from "@/db";
 
-export const updateFulfill = async ({
+export const updateFulfilling = async ({
   _id,
-  data,
+  fulfilling,
 }: {
   _id: string;
-  data: {
-    completed: boolean;
-    vehicle?: {
-      plate?: string;
-      weight: {
-        initial: number;
-        loaded: number;
-      };
-    };
-    orderlines: {
+  fulfilling: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
   };
 }): Promise<{
   _id: string;
-  fulfillment: {
-    completed: boolean;
-    vehicle?: {
-      plate?: string;
-      weight: {
-        initial: number;
-        loaded: number;
-      };
-    };
-    orderlines: {
+  fulfilling: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
   };
+  updatedAt: Date;
 }> => {
   const db = await Data.connectDB();
   const now = new Date();
@@ -48,7 +35,7 @@ export const updateFulfill = async ({
 
   const opt = {
     $set: {
-      fulfillment: data,
+      fulfilling,
       updatedAt: now,
     },
   };
@@ -57,6 +44,7 @@ export const updateFulfill = async ({
 
   return {
     _id,
-    fulfillment: data,
+    fulfilling,
+    updatedAt: now,
   };
 };

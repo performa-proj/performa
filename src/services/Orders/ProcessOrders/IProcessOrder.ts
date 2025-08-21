@@ -11,7 +11,13 @@ export interface IProcessOrder {
     mobile: string;
   } | undefined;
   ordering: {
-    lines: IOrderline[];
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+        sellingAt: number | undefined;
+      };
+    };
     weight: number;
     total: number;
   };
@@ -27,17 +33,19 @@ export interface IProcessOrder {
   fulfilling?: {
     completed: boolean;
     vehicle?: {
-      plate?: string;
+      plate: string;
       weight: {
         initial: number;
         loaded: number;
       };
     };
-    orderlines: {
+    data: {
       [sku: string]: {
         count: number;
+        completed: boolean;
       };
     };
+    weight: number;
   };
   payment: {
     payable: number;
