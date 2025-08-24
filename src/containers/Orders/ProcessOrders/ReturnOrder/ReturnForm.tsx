@@ -11,6 +11,7 @@ import { resolveReturning } from "@/services/Orders/resolveReturning";
 import ReturnOrderSection from "./core/ReturnOrderSection";
 import ReturnOrderlineDialog from "./core/ReturnOrderlineDialog";
 import { updateReturn } from "../updateReturn";
+import ReturnSummaryDialog from "./core/ReturnSummaryDialog";
 
 interface IState {
   returnData: {
@@ -76,8 +77,6 @@ export default function ReturnForm({
     },
     editReturnline: undefined,
   });
-
-  console.log(state);
 
   const handleProductSearching = async (value: string) => {
     const args = value.split(",").map(i => i.trim());
@@ -225,6 +224,11 @@ export default function ReturnForm({
           onClose={handleReturnlineClosed}
         />
       )}
+      <ReturnSummaryDialog
+        open={true}
+        order={order}
+        onClose={() => {}}
+      />
     </div>
   );
 }

@@ -12,55 +12,86 @@ import CounterDialog from "./CounterDialog";
 
 export default function FulfillOrder({
   order,
+  onUpdated,
   onClose,
 }: {
   order: IProcessOrder;
+  onUpdated: (data: {
+    _id: string;
+    fulfilling: {
+      completed: boolean;
+      vehicle?: {
+        plate: string;
+        weight: {
+          initial: number;
+          loaded: number;
+        };
+      };
+      data: {
+        [sku: string]: {
+          count: number;
+          completed: boolean;
+        };
+      };
+      weight: number;
+    };
+  }) => void;
   onClose: () => void;
 }) {
-  const {
-    ordering,
-    fulfilling = {
-      completed: false,
-      data: {},
-      weight: 0,
-    },
-  } = order;
   const lines = resolveOrdering({
     level: order.level,
-    lines: ordering.data,
+    lines: order.ordering.data,
   }).orderlines.map((each) => ({
     sku: each.sku,
     label: each.label,
     quantity: each.quantity,
+    weight: each.weight,
   }));
 
-  const [show, setShow] = React.useState(false);
+  const disabled = {
+    plate: order.fulfilling?.vehicle?.plate || order.fulfilling?.completed ? true : false,
+    initialWeight: (order.fulfilling?.vehicle?.weight.initial && order.fulfilling.vehicle.weight.initial > 0) || order.fulfilling?.completed ? true : false,
+    loadedWeight: (order.fulfilling?.vehicle?.weight.loaded && order.fulfilling.vehicle.weight.loaded > 0) || order.fulfilling?.completed ? true : false,
+  };
 
+  const [isLoading, setLoading] = React.useState(false);
+  const [isShow, setShow] = React.useState(false);
   const [state, setState] = React.useState<{
-    [sku: string]: {
-      count: number;
-      completed: boolean;
+    completed: boolean;
+    vehicle: {
+      plate: string;
+      initialWeight: string;
+      loadedWeight: string;
     };
-  }>(lines.reduce((result, { sku, quantity }) => {
-    if (fulfilling.data[sku] === undefined) {
+    data: {
+      [sku: string]: {
+        count: number;
+        completed: boolean;
+      };
+    };
+    weight: number;
+  }>({
+    completed: order.fulfilling?.completed || false,
+    vehicle: {
+      plate: order.fulfilling?.vehicle?.plate || "",
+      initialWeight: order.fulfilling?.vehicle?.weight.initial.toString() || "",
+      loadedWeight: order.fulfilling?.vehicle?.weight.loaded.toString() || "",
+    },
+    data: order.fulfilling?.data || Object.keys(order.ordering.data).reduce((result, sku) => {
       result[sku] = {
         count: 0,
         completed: false,
       };
-    } else {
-      result[sku] = {
-        count: fulfilling.data[sku].count,
-        completed: fulfilling.data[sku].count < quantity ? false : true,
-      };
-    }
 
-    return result;
-  }, {} as {
-    [sku: string]: {
-      count: number;
-      completed: boolean;
-    };
-  }));
+      return result;
+    }, {} as {
+      [sku: string]: {
+        count: number;
+        completed: boolean;
+      };
+    }),
+    weight: order.fulfilling?.weight || 0,
+  });
 
   const [activeline, setActiveline] = React.useState<{
     index: number;
@@ -70,26 +101,16 @@ export default function FulfillOrder({
     count: number;
   } | undefined>(undefined);
 
-  const [vehicle, setVehicle] = React.useState<{
-    plate: string;
-    initialWeight: string;
-    loadedWeight: string;
-  }>({
-    plate: fulfilling.vehicle?.plate || "",
-    initialWeight: fulfilling.vehicle?.weight.initial.toString() || "0",
-    loadedWeight: fulfilling.vehicle?.weight.loaded.toString() || "0",
-  });
-
   const handleLineSelected = (index: number) => {
     const line = lines[index];
 
-    if (!state[line.sku].completed) {
+    if (!state.data[line.sku].completed) {
       setActiveline({
         index,
         sku: line.sku,
         label: line.label,
         quantity: line.quantity,
-        count: state[line.sku].count,
+        count: state.data[line.sku].count,
       });
     }
   };
@@ -105,19 +126,18 @@ export default function FulfillOrder({
   }) => {
     if (activeline) {
       const nState = { ...state };
-      nState[sku] = {
+      nState.data[sku] = {
         count,
         completed,
       };
 
-      const data = {
-        _id: order._id,
-        fulfilling: {
-          data: nState,
-        },
-      };
+      const weight = lines.reduce((result, each) => {
+        result += each.weight * nState.data[each.sku].count;
 
-      await updateFulfilling(data)
+        return result;
+      }, 0);
+
+      nState.weight = weight;
 
       setState(nState);
       setActiveline(undefined);
@@ -128,6 +148,53 @@ export default function FulfillOrder({
     if (activeline) {
       setActiveline(undefined);
     }
+  };
+
+  const handleFulfillingSaved = async () => {
+    setLoading(true);
+
+    const { completed, vehicle, data, weight } = state;
+
+    const fulfilling = {
+      completed,
+      data,
+      weight,
+      ...(vehicle.plate.length === 0 ? {} : {
+        vehicle: {
+          plate: state.vehicle.plate,
+          weight: {
+            initial: Number(state.vehicle.initialWeight) || 0,
+            loaded: Number(state.vehicle.loadedWeight) || 0,
+          },
+        },
+      }),
+    };
+
+    fulfilling.completed = Object.values(data).reduce((result, each) => {
+      if (!each.completed)
+        return false;
+
+      return result;
+    }, true);
+
+    if (fulfilling.vehicle) {
+      const { initial, loaded } = fulfilling.vehicle.weight;
+
+      if (initial > 0 && loaded > 0 && (initial > loaded)) {
+        fulfilling.vehicle.weight.initial = loaded;
+        fulfilling.vehicle.weight.loaded = initial;
+      } else {
+        fulfilling.completed = false;
+      }
+    }
+
+    const result = await updateFulfilling({
+      _id: order._id,
+      fulfilling,
+    });
+
+    onUpdated(result);
+    setLoading(false);
   };
 
   return (
@@ -148,9 +215,9 @@ export default function FulfillOrder({
         <div className="flex px-2 items-center">
           <button
             className="cursor-pointer text-gray-900"
-            onClick={() => setShow(!show)}
+            onClick={() => setShow(!isShow)}
           >
-            {show
+            {isShow
               ? (<ChevronUpIcon className="size-4.5 sm:size-5" />)
               : (<ChevronDownIcon className="size-4.5 sm:size-5" />)
             }
@@ -158,27 +225,28 @@ export default function FulfillOrder({
           <p className="text-base font-semibold text-gray-900 mx-1.5">Vehicle</p>
         </div>
 
-        {show && (
-          <div className="mt-2 sm:px-4 grid grid-cols-1 sm:grid-cols-6 gap-x-6 gap-y-2">
+        {isShow && (
+          <div className="mt-2 px-6 grid grid-cols-1 sm:grid-cols-6 gap-x-6 gap-y-2">
             <div className="sm:col-span-2">
               <label htmlFor="vehicle-plate" className="block text-sm/6 font-medium text-gray-900">
                 Plate
               </label>
-              <div className="mt-2">
+              <div className="sm:mt-1">
                 <input
                   id="vehicle-plate"
                   name="vehicle-plate"
                   type="text"
                   autoComplete="off"
-                  disabled={fulfilling.vehicle?.plate ? true : false}
-                  className={classnames(fulfilling.vehicle?.plate ? "bg-gray-100" : "bg-white",
+                  disabled={disabled.plate}
+                  className={classnames(disabled.plate ? "bg-gray-100" : "bg-white",
                     "block w-full rounded-md px-3 py-1.5 text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600")}
-                  value={vehicle.plate}
+                  value={state.vehicle.plate}
                   onChange={(e) => {
-                    setVehicle({
-                      ...vehicle,
-                      plate: e.currentTarget.value,
-                    });
+                    const nState = {
+                      ...state,
+                    };
+                    nState.vehicle.plate = e.currentTarget.value;
+                    setState(nState);
                   }}
                 />
               </div>
@@ -188,21 +256,22 @@ export default function FulfillOrder({
               <label htmlFor="initial-weight" className="block text-sm/6 font-medium text-gray-900">
                 Initial Weight (KG.)
               </label>
-              <div className="mt-2">
+              <div className="sm:mt-1">
                 <input
                   id="initial-weight"
                   name="initial-weight"
                   type="text"
                   autoComplete="off"
-                  disabled={fulfilling.vehicle?.weight.initial ? true : false}
-                  className={classnames(fulfilling.vehicle?.weight.initial ? "bg-gray-100" : "bg-white",
+                  disabled={disabled.initialWeight}
+                  className={classnames(disabled.initialWeight ? "bg-gray-100" : "bg-white",
                     "block w-full rounded-md px-3 py-1.5 text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600")}
-                  value={vehicle.initialWeight}
+                  value={state.vehicle.initialWeight}
                   onChange={(e) => {
-                    setVehicle({
-                      ...vehicle,
-                      initialWeight: resolveNumber(vehicle.initialWeight, e.currentTarget.value),
-                    });
+                    const nState = {
+                      ...state,
+                    };
+                    nState.vehicle.initialWeight = resolveNumber(state.vehicle.initialWeight, e.currentTarget.value);
+                    setState(nState);
                   }}
                 />
               </div>
@@ -212,21 +281,22 @@ export default function FulfillOrder({
               <label htmlFor="loaded-weight" className="block text-sm/6 font-medium text-gray-900">
                 Loaded Weight (KG.)
               </label>
-              <div className="mt-2">
+              <div className="sm:mt-1 flex">
                 <input
                   id="loaded-weight"
                   name="loaded-weight"
                   type="text"
                   autoComplete="off"
-                  disabled={fulfilling.vehicle?.weight.loaded ? true : false}
-                  className={classnames(fulfilling.vehicle?.weight.loaded ? "bg-gray-100" : "bg-white",
+                  disabled={disabled.loadedWeight}
+                  className={classnames(disabled.loadedWeight ? "bg-gray-100" : "bg-white",
                     "block w-full rounded-md px-3 py-1.5 text-sm/6 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600")}
-                  value={vehicle.loadedWeight}
+                  value={state.vehicle.loadedWeight}
                   onChange={(e) => {
-                    setVehicle({
-                      ...vehicle,
-                      loadedWeight: resolveNumber(vehicle.loadedWeight, e.currentTarget.value),
-                    });
+                    const nState = {
+                      ...state,
+                    };
+                    nState.vehicle.loadedWeight = resolveNumber(state.vehicle.loadedWeight, e.currentTarget.value);
+                    setState(nState);
                   }}
                 />
               </div>
@@ -257,7 +327,7 @@ export default function FulfillOrder({
             {lines.map((each, index) => (
               <tr
                 key={each.sku}
-                className={state[each.sku].completed ? "bg-gray-100" : "bg-white hover:bg-gray-100 cursor-pointer"}
+                className={state.data[each.sku].completed ? "bg-gray-100" : "bg-white hover:bg-gray-100 cursor-pointer"}
                 onClick={() => handleLineSelected(index)}
               >
                 <td
@@ -282,12 +352,33 @@ export default function FulfillOrder({
                   scope="col"
                   className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center"
                 >
-                  {state[each.sku].count.toLocaleString()}
+                  {state.data[each.sku].count.toLocaleString()}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center px-3 py-3">
+        <div className="flex flex-col grow gap-y-1">
+          <p className="text-sm font-normal text-gray-900">
+            Weight:
+            <span className="font-semibold px-1">{state.weight.toLocaleString()} KG.</span>
+          </p>
+          <p className="text-sm font-normal text-gray-900">
+            Status:
+            <span className="font-semibold px-1">{order.fulfilling?.completed ? "Completed" : "In Progress"}</span>
+          </p>
+        </div>
+        {!order.fulfilling?.completed && (<button
+          type="button"
+          className="rounded-md bg-blue-600 hover:bg-blue-500 px-3 py-2 text-sm font-semibold text-white w-18"
+          disabled={isLoading}
+          onClick={handleFulfillingSaved}
+        >
+          Save
+        </button>)}
       </div>
 
       {activeline && (
@@ -300,6 +391,7 @@ export default function FulfillOrder({
             quantity: activeline.quantity,
             count: activeline.count,
           }}
+          isLoading={isLoading}
           onSave={handleLineSaved}
           onClose={handleLineClosed}
         />

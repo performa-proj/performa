@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
-import { ProcessOrders } from "@/containers/Orders/ProcessOrders";
 import ProcessOrdersTable from "@/containers/Orders/ProcessOrders/ProcessOrdersTable";
 import FulfillOrder from "@/containers/Orders/ProcessOrders/FulfillOrder";
+import { ProcessOrders } from "@/containers/Orders/ProcessOrders";
 import { ReturnForm } from "@/containers/Orders/ProcessOrders/ReturnOrder";
+import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
 
 export default function Page() {
@@ -61,15 +61,36 @@ export default function Page() {
     }
   };
 
-  const handleFulfillUpdated = (order: IProcessOrder) => {
+  const handleFulfillUpdated = (data: {
+    _id: string;
+    fulfilling: {
+      completed: boolean;
+      vehicle?: {
+        plate: string;
+        weight: {
+          initial: number;
+          loaded: number;
+        };
+      };
+      data: {
+        [sku: string]: {
+          count: number;
+          completed: boolean;
+        };
+      };
+      weight: number;
+    };
+  }) => {
     const nOrders = [...orders];
-    nOrders[fulfillSelected.index] = order;
-    setOrders(nOrders);
-
+    const order = nOrders[fulfillSelected.index];
+    order.fulfilling = data.fulfilling;
+    
     setFulfillSelected({
       ...fulfillSelected,
       fulfillOrder: order,
     });
+
+    setOrders(nOrders);
   };
 
   const handleReturnUpdated = (data: {
@@ -112,6 +133,7 @@ export default function Page() {
             index: -1,
             fulfillOrder: undefined,
           })}
+          onUpdated={handleFulfillUpdated}
         />
       )}
       {returnSelected.returnOrder && (

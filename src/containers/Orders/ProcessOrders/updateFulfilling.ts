@@ -1,22 +1,40 @@
 export const updateFulfilling = async (payloads: {
   _id: string;
   fulfilling: {
+    completed: boolean;
+    vehicle?: {
+      plate: string;
+      weight: {
+        initial: number;
+        loaded: number;
+      };
+    };
     data: {
       [sku: string]: {
         count: number;
         completed: boolean;
       };
     };
+    weight: number;
   };
 }): Promise<{
   _id: string;
-  fulfillment: {
+  fulfilling: {
+    completed: boolean;
+    vehicle?: {
+      plate: string;
+      weight: {
+        initial: number;
+        loaded: number;
+      };
+    };
     data: {
       [sku: string]: {
         count: number;
         completed: boolean;
       };
     };
+    weight: number;
   };
 }> => {
   const response = await fetch("/api/orders/process/fulfill", {
