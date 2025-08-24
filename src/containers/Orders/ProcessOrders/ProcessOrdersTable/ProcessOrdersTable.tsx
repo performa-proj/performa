@@ -121,14 +121,14 @@ export default function ProcessOrdersTable({
                       <p className="text-sm/6 font-semibold text-gray-900 mt-1">{order.customer ? order.customer.name : "[Walk-In]"}</p>
                     </div>
                   </td>
-                  <td className="px-2 py-2 w-36">
+                  <td className="px-2 py-2 w-36 sm:w-44">
                     <div className="grid grid-cols-4 justify-items-center">
                       <TruckIcon
-                        className={classnames(order.fulfilling ? (order.fulfilling.completed ? "text-blue-600" : "text-green-600 hover:text-green-500") : "text-gray-600 hover:text-gray-900", "cursor-pointer inline-block size-5 sm:size-6 m-1")}
+                        className={classnames(order.fulfilling ? (order.fulfilling.completed ? "text-blue-600" : "text-green-600 hover:text-green-500") : "text-gray-600 hover:text-gray-900", "cursor-pointer inline-block size-5 sm:size-6 m-1 sm:mx-2")}
                         onClick={() => onFulfillSelected(order._id)}
                       />
                       <ArrowUturnDownIcon
-                        className={classnames(order.returning ? "text-blue-600" : "text-gray-600 hover:text-gray-900", "cursor-pointer inline-block size-5 sm:size-6 m-1")}
+                        className={classnames(order.returning ? "text-blue-600" : "text-gray-600 hover:text-gray-900", "cursor-pointer inline-block size-5 sm:size-6 m-1 sm:mx-2")}
                         onClick={() => onReturnSelected(order._id)}
                       />
                       <Link
@@ -136,12 +136,11 @@ export default function ProcessOrdersTable({
                         target="_blank"
                       >
                         <PrinterIcon
-                          className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 m-1"
-                          onClick={() => onFulfillSelected(order._id)}
+                          className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 m-1 sm:mx-2"
                         />
                       </Link>
                       <BanknotesIcon
-                        className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 m-1"
+                        className="cursor-pointer inline-block size-5 sm:size-6 text-gray-600 hover:text-gray-900 m-1 sm:mx-2"
                         onClick={() => onFulfillSelected(order._id)}
                       />
                     </div>

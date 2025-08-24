@@ -1,3 +1,7 @@
+"use client";
+
+import React from "react";
+
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { resolveOrdering } from "@/services/Orders/resolveOrdering";
 

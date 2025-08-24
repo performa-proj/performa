@@ -8,9 +8,9 @@ import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
 import { IReturnline } from "@/services/Orders/IReturnline";
 import { resolveReturning } from "@/services/Orders/resolveReturning";
 
+import { updateReturn } from "../updateReturn";
 import ReturnOrderSection from "./core/ReturnOrderSection";
 import ReturnOrderlineDialog from "./core/ReturnOrderlineDialog";
-import { updateReturn } from "../updateReturn";
 import ReturnSummaryDialog from "./core/ReturnSummaryDialog";
 
 interface IState {
@@ -77,6 +77,8 @@ export default function ReturnForm({
     },
     editReturnline: undefined,
   });
+
+  console.log(order);
 
   const handleProductSearching = async (value: string) => {
     const args = value.split(",").map(i => i.trim());
@@ -225,7 +227,7 @@ export default function ReturnForm({
         />
       )}
       <ReturnSummaryDialog
-        open={true}
+        open={false}
         order={order}
         onClose={() => {}}
       />

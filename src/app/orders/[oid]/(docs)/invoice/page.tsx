@@ -1,7 +1,7 @@
 import React from "react";
 import QRCode from "react-qr-code";
 import { ProcessOrders } from "@/services/Orders/ProcessOrders";
-import Orderlines from "../core/Orderlines";
+import Orderlines from "../../docs/core/Orderlines";
 import Topline from "../core/Topline";
 
 export default async function Page({
