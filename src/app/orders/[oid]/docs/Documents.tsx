@@ -20,7 +20,7 @@ export default function Documents({
     <div className="h-full w-full bg-white">
       <div className="print:hidden flex px-4 py-2 border-b border-gray-400">
         <div className="flex items-center grow">
-          <h1 className="text-lg font-semibold text-gray-900">Order: </h1>
+          <h1 className="hidden sm:block text-lg font-semibold text-gray-900">Order: </h1>
           <p className="px-1 font-medium">#{order.transactionID}</p>
         </div>
         <div className="flex items-center">

@@ -37,7 +37,7 @@ export default function Statement({
           </div>
           <div className="sm:grid sm:grid-cols-2 sm:gap-x-4">
             <p className="hidden sm:block text-base font-bold text-gray-900 text-right uppercase">Transaction ID:</p>
-            <p className="text-base font-bold text-gray-900 text-right">{order.transactionID}</p>
+            <p className="text-base font-bold text-gray-900 text-right">{order.transactionID}/{order.level}</p>
 
             <p className="hidden sm:block text-base font-medium text-gray-900 text-right uppercase mt-1">Date:</p>
             <p className="text-base font-medium text-gray-900 text-right mt-1">{date}</p>

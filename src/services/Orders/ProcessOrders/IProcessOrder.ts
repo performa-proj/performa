@@ -1,5 +1,4 @@
 import { IProductItemLine } from "@/services/Products/Items/IProductItemLine";
-import { IOrderline } from "../IOrderline";
 
 export interface IProcessOrder {
   _id: string;
@@ -21,15 +20,6 @@ export interface IProcessOrder {
     weight: number;
     total: number;
   };
-  returning?: {
-    data: {
-      [sku: string]: {
-        quantity: number;
-        line: IProductItemLine;
-      };
-    };
-    total: number;
-  };
   fulfilling?: {
     completed: boolean;
     vehicle?: {
@@ -46,6 +36,15 @@ export interface IProcessOrder {
       };
     };
     weight: number;
+  };
+  returning?: {
+    data: {
+      [sku: string]: {
+        quantity: number;
+        line: IProductItemLine;
+      };
+    };
+    total: number;
   };
   payment: {
     payable: number;

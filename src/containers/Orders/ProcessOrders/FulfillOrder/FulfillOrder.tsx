@@ -171,8 +171,10 @@ export default function FulfillOrder({
     };
 
     fulfilling.completed = Object.values(data).reduce((result, each) => {
-      if (!each.completed)
+      console.log(each);
+      if (!each.completed) {
         return false;
+      }
 
       return result;
     }, true);
@@ -180,9 +182,12 @@ export default function FulfillOrder({
     if (fulfilling.vehicle) {
       const { initial, loaded } = fulfilling.vehicle.weight;
 
-      if (initial > 0 && loaded > 0 && (initial > loaded)) {
-        fulfilling.vehicle.weight.initial = loaded;
-        fulfilling.vehicle.weight.loaded = initial;
+      if (initial > 0 && loaded > 0) {
+
+        if (initial > loaded) {
+          fulfilling.vehicle.weight.initial = loaded;
+          fulfilling.vehicle.weight.loaded = initial;
+        }
       } else {
         fulfilling.completed = false;
       }
