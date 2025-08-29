@@ -34,6 +34,9 @@ export default function EditOrderlineDialog({
     quantity: predata.quantity,
     sellingAt: predata.sellingAt,
   });
+
+  const [isLoading, setLoading] = React.useState(false);
+
   const handleQuantityChanged = (value: string) => {
     let quantity = 0;
 
@@ -75,18 +78,21 @@ export default function EditOrderlineDialog({
   };
 
   const handleOrderlineUpdated = () => {
+    setLoading(true);
     const data = {
       sku: predata.sku,
       quantity: state.quantity,
       sellingAt: state.sellingAt < predata.lowestPrice ? predata.lowestPrice : state.sellingAt,
     };
     onUpdated(data);
+    setLoading(false);
   };
 
   return (
     <DialogBase
       title="Edit Orderline"
       open={open}
+      isLoading={isLoading}
       onClose={onClose}
       deleteButton={{
         onDelete: () => onDeleted({

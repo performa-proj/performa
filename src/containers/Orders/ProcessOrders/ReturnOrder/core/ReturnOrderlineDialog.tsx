@@ -61,6 +61,7 @@ export default function ReturnOrderlineDialog({
     <DialogBase
       title="Edit Returnline"
       open={open}
+      isLoading={false}
       onClose={onClose}
       deleteButton={{
         onDelete: () => onDelete({

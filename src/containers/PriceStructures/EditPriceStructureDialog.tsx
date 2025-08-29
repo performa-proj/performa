@@ -108,6 +108,7 @@ export default function EditPriceStructureDialog({
     <DialogBase
       title="Edit Price Structure"
       open={open}
+      isLoading={false}
       onClose={onClose}
       deleteButton={{
         title: "Delete",

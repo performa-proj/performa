@@ -113,6 +113,7 @@ export default function EditProductItemDialog({
     <DialogBase
       title="Edit Product Item"
       open={open}
+      isLoading={false}
       onClose={handleClose}
       deleteButton={{
         title: "Delete",
