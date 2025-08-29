@@ -107,6 +107,7 @@ export default function NewProductItemDialog({
     <DialogBase
       title="New Product Item"
       open={open}
+      isLoading={false}
       onClose={handleClose}
       submitButton={{
         title: "Create",

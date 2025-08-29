@@ -1,5 +1,9 @@
+"use client";
+
+import React from "react";
+
 import { IProcessOrder } from "@/services/Orders/ProcessOrders/IProcessOrder";
-import { resolveOrdering } from "@/services/Orders/resolveOrdering";
+import { resolveProcessOrder } from "@/services/Orders/ProcessOrders/resolveProcessOrder";
 
 export default function Orderlines({
   order
@@ -7,10 +11,7 @@ export default function Orderlines({
   order: IProcessOrder;
 }) {
 
-  const ordering = resolveOrdering({
-    level: order.level,
-    lines: order.ordering.data,
-  });
+  const resolvable = resolveProcessOrder(order);
 
   return (
     <table className="w-full border-y border-gray-400 divide-y divide-gray-400">
@@ -31,36 +32,36 @@ export default function Orderlines({
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-300">
-        {ordering.orderlines.map((each) => {
-          const sellingTotal = each.quantity * each.sellingAt;
+        {resolvable.ordering.lines.map((each) => {
+          const sellingTotal = each.count * each.sellingAt;
+
           return (
             <tr key={each.sku}>
               <td
                 scope="col"
                 className="p-2 text-right"
               >
-                <p className="text-sm font-medium text-gray-900">{each.quantity}</p>
+                <p className="text-sm/6 font-medium text-gray-900">{each.count}</p>
               </td>
               <td
                 scope="col"
                 className="p-2 text-left"
               >
-                <div className="block sm:flex sm:grow">
-                  <p className="text-sm font-medium text-gray-900 sm:order-1">{each.label}</p>
-                  <p className="mt-1 sm:mt-0 sm:mr-1 text-sm font-normal sm:font-medium text-gray-900">[{each.sku}]</p>
+                <div className="block">
+                  <p className="text-sm/6 font-medium text-gray-900">[{each.sku}] {each.label}</p>
                 </div>
               </td>
               <td
                 scope="col"
                 className="p-2 text-right"
               >
-                <p className="text-sm font-medium text-gray-900">{each.sellingAt.toLocaleString()}.00</p>
+                <p className="text-sm/6 font-medium text-gray-900">{each.sellingAt.toLocaleString()}.00</p>
               </td>
               <td
                 scope="col"
                 className="p-2 text-right"
               >
-                <p className="text-sm font-medium text-gray-900">{sellingTotal.toLocaleString()}.00</p>
+                <p className="text-sm/6 font-medium text-gray-900">{sellingTotal.toLocaleString()}.00</p>
               </td>
             </tr>
           );
@@ -75,14 +76,14 @@ export default function Orderlines({
           >
             <div className="flex items-baseline">
               <p className="text-sm/6 font-semibold text-gray-900">Total</p>
-              <p className="mx-2 text-sm/6 font-semibold text-gray-900">[<span>{order.ordering.weight} KG</span>]</p>
+              <p className="mx-2 text-sm/6 font-semibold text-gray-900">[<span>{resolvable.ordering.weight} KG</span>]</p>
             </div>
           </th>
           <th
             scope="row"
             className="p-2 text-right"
           >
-            <div className="text-base font-semibold text-gray-900">{order.ordering.total.toLocaleString()}.00</div>
+            <div className="text-base font-semibold text-gray-900">{resolvable.ordering.total.toLocaleString()}.00</div>
           </th>
         </tr>
       </tfoot>

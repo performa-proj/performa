@@ -21,10 +21,11 @@ export const createNew = async ({
     createdAt: now,
     updatedAt: now,
   };
-  const result = await db.collection(COLLECTION_NAME.Identities).insertOne(data);
+  console.log(data);
+  //const result = await db.collection(COLLECTION_NAME.Identities).insertOne(data);
 
   return {
-    _id: result.insertedId.toString(),
+    _id: "", // result.insertedId.toString(),
     ...data,
   };
 };

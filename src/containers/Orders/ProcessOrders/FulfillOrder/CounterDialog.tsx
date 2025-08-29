@@ -8,6 +8,7 @@ import { resolveNumber } from "@/containers/core/resolveNumber";
 export default function CounterDialog({
   open,
   predata,
+  isLoading,
   onSave,
   onClose,
 }: {
@@ -19,6 +20,7 @@ export default function CounterDialog({
     quantity: number;
     count: number;
   };
+  isLoading: boolean;
   onSave: (data: {
     sku: string;
     count: number;
@@ -76,9 +78,10 @@ export default function CounterDialog({
     <DialogBase
       title="Product Item Counter"
       open={open}
+      isLoading={isLoading}
       onClose={handleClose}
       submitButton={{
-        title: "Save",
+        title: "Update",
         onSubmit: handleSaved,
       }}
     >

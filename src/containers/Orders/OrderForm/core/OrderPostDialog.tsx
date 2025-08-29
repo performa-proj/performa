@@ -90,6 +90,7 @@ export default function OrderPostDialog({
   const { customer } = orderData;
   const { weight, total } = summarizeOrderlines(orderlines);
   const orderTypes = customer ? [OrderTypes.RO, OrderTypes.PO] : [OrderTypes.RO];
+  const [isLoading, setLoading] = React.useState(false);
   const [state, setState] = React.useState<IState>({
     type: "regular",
     payment: {
@@ -108,6 +109,13 @@ export default function OrderPostDialog({
       acc: Number(state.payment.acc),
     },
   });
+
+  const handleOrderTypeChanged = (value: string) => {
+    setState({
+      ...state,
+      type: value,
+    });
+  };
 
   const handleCashChanged = (value: string) => {
     const nState = {
@@ -139,16 +147,20 @@ export default function OrderPostDialog({
     }
   };
 
-  const handleOrderTypeChanged = (value: string) => {
-    setState({
+  const handlePODChecked = () => {
+    const nState = {
       ...state,
-      type: value,
-    });
+    };
+
+    nState.payment.pod = !nState.payment.pod;
+    setState(nState);
   };
 
-  const handlePosting = () => {
+  const handlePosting = async () => {
+    setLoading(true);
+
     if (state.type === "preorder" && orderData.customer) {
-      onPreordering({
+      await onPreordering({
         customer: {
           id: orderData.customer.id,
           name: orderData.customer.name,
@@ -161,7 +173,7 @@ export default function OrderPostDialog({
         lines: orderData.lines,
       });
     } else {
-      onOrdering({
+      await onOrdering({
         level: ordering.level,
         customer: customer ? {
           id: customer.id,
@@ -182,6 +194,8 @@ export default function OrderPostDialog({
         },
       });
     }
+
+    setLoading(false);
   };
 
   const handleClosed = () => {
@@ -202,6 +216,7 @@ export default function OrderPostDialog({
     <DialogBase
       title="Post Order"
       open={open}
+      isLoading={isLoading}
       onClose={handleClosed}
       submitButton={{
         title: "Post",
@@ -294,48 +309,45 @@ export default function OrderPostDialog({
               </div>
             </div>
 
-            <div className="flex items-center pl-2 space-x-2">
-              <div className="group size-4 grid grid-cols-1">
-                <input
-                  id="pod"
-                  name="pod"
-                  type="checkbox"
-                  className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                  checked={state.payment.pod}
-                  onChange={(e) => {
-                    setState({
-                      ...state,
-                      payment: {
-                        ...state.payment,
-                        pod: e.currentTarget.checked,
-                      },
-                    });
-                  }}
-                />
-                <svg
-                  fill="none"
-                  viewBox="0 0 14 14"
-                  className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
-                >
-                  <path
-                    d="M3 8L6 11L11 3.5"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="opacity-0 group-has-[:checked]:opacity-100"
+            <div className="px-2 pt-1.5">
+              <div
+                className="flex items-center gap-x-2 cursor-pointer"
+                onClick={handlePODChecked}
+              >
+                <div className="group size-4 grid grid-cols-1">
+                  <input
+                    id="pod"
+                    name="pod"
+                    type="checkbox"
+                    className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-blue-600 checked:bg-blue-600 indeterminate:border-blue-600 indeterminate:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto cursor-pointer"
+                    checked={state.payment.pod}
+                    onChange={() => handlePODChecked}
                   />
-                  <path
-                    d="M3 7H11"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                  />
-                </svg>
+                  <svg
+                    fill="none"
+                    viewBox="0 0 14 14"
+                    className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
+                  >
+                    <path
+                      d="M3 8L6 11L11 3.5"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="opacity-0 group-has-[:checked]:opacity-100"
+                    />
+                    <path
+                      d="M3 7H11"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm/6 font-medium text-gray-900">
+                  Pay on Delivery (PoD)
+                </p>
               </div>
-              <p className="text-sm/6 font-medium text-gray-900">
-                Pay on Delivery (PoD)
-              </p>
             </div>
           </div>
         </dl>

@@ -7,22 +7,40 @@ export const updateFulfilling = async ({
 }: {
   _id: string;
   fulfilling: {
+    completed: boolean;
+    vehicle?: {
+      plate: string;
+      weight: {
+        initial: number;
+        loaded: number;
+      };
+    };
     data: {
       [sku: string]: {
         count: number;
         completed: boolean;
       };
     };
+    weight: number;
   };
 }): Promise<{
   _id: string;
   fulfilling: {
+    completed: boolean;
+    vehicle?: {
+      plate: string;
+      weight: {
+        initial: number;
+        loaded: number;
+      };
+    };
     data: {
       [sku: string]: {
         count: number;
         completed: boolean;
       };
     };
+    weight: number;
   };
   updatedAt: Date;
 }> => {

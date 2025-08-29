@@ -1,10 +1,12 @@
 "use client";
 
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export default function DialogBase({
   children,
   open,
+  isLoading,
   title,
   submitButton,
   deleteButton,
@@ -15,6 +17,7 @@ export default function DialogBase({
 }: {
   children: React.ReactNode;
   open: boolean;
+  isLoading: boolean;
   title: string;
   submitButton?: {
     title: string;
@@ -56,11 +59,12 @@ export default function DialogBase({
                 {children}
               </div>
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:flex sm:flex-row-reverse">
               {submitButton && (
                 <button
                   type="button"
-                  className="inline-flex w-full min-w-18 justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                  className="inline-flex w-full min-w-18 justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                  disabled={isLoading}
                   onClick={submitButton.onSubmit}
                 >
                   {submitButton.title}
@@ -69,7 +73,8 @@ export default function DialogBase({
               {deleteButton && (
                 <button
                   type="button"
-                  className="mt-3 inline-flex w-full min-w-18 justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:mt-0 sm:w-auto"
+                  className="mt-3 inline-flex w-full min-w-18 justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 sm:ml-3 sm:mt-0 sm:w-auto"
+                  disabled={isLoading}
                   onClick={deleteButton.onDelete}
                 >
                   {deleteButton.title}
@@ -83,6 +88,9 @@ export default function DialogBase({
               >
                 {closeButton.title}
               </button>
+              <div className="flex flex-auto items-center">
+                {isLoading && (<ArrowPathIcon className="size-4.5 animate-spin text-gray-900" />)}
+              </div>
             </div>
           </DialogPanel>
         </div>

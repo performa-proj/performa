@@ -107,6 +107,7 @@ export default function NewPriceStructureDialog({
     <DialogBase
       title="New Price Structure"
       open={open}
+      isLoading={false}
       onClose={handleClose}
       submitButton={{
         title: "Create",

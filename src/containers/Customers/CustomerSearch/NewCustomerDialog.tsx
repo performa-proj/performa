@@ -20,14 +20,16 @@ export default function NewCustomerDialog({
   onClose: () => void;
 }) {
   const [name, setName] = React.useState("");
+  const [isLoading, setLoading] = React.useState(false);
 
   const handleCreateCustomer = async () => {
+    setLoading(true);
     const data = {
       name,
       mobile,
     };
 
-    const response = await fetch(`/api/identities/customers}`, {
+    const response = await fetch(`/api/identities/customers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,6 +40,7 @@ export default function NewCustomerDialog({
     const json = await response.json();
     setName("");
     onCreated(json.data);
+    setLoading(false);
   };
 
   const handleClose = () => {
@@ -49,6 +52,7 @@ export default function NewCustomerDialog({
     <DialogBase
       title="New Customer"
       open={open}
+      isLoading={isLoading}
       submitButton={{
         title: "Create",
         onSubmit: handleCreateCustomer,
