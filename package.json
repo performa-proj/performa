@@ -9,15 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
-    "@heroicons/react": "^2.2.0",
-    "jose": "^6.0.12",
-    "mongodb": "^6.19.0",
-    "next": "15.5.0",
+    "@headlessui/react": "^2",
+    "@heroicons/react": "^2",
+    "clsx": "2.1.1",
+    "jose": "6.1.0",
+    "mongodb": "6.19.0",
+    "motion": "12.23.12",
+    "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-qr-code": "^2.0.18",
-    "zod": "^4.0.5"
+    "react-qr-code": "2.0.18",
+    "zod": "^4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -26,7 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.5.0",
+    "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
